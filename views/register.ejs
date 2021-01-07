@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ARC</title>
+
+    <%- include("./partials/stylesheets.ejs") %>
+
+    <link rel="stylesheet" href="/css/login-form.css">
+    <link rel="stylesheet" href="/css/register-form.css">
+</head>
+
+<body>
+   
+    <%- include("./partials/navigation.ejs") %>
+
+    <div class="container">
+        <div class="d-flex flex-column justify-content-center" id="login-box">
+            <div class="login-box-header">
+                <h4 style="color:rgb(139,139,139);margin-bottom:0px;font-weight:400;font-size:27px;">Rejestracja</h4>
+            </div>
+            
+            <form method="POST">
+                <div class="rf-register-form">
+                    <form class="rg-form">
+                        <div class="rf-input-container">
+                            <i class="fa fa-star fa fa-user rf-icon" style="background: #56c6c6;"></i>
+                            <input class="form-control rf-input-field" type="text" placeholder="Nazwa użytkownika" required>
+                        </div>
+                        <div class="rf-input-container">
+                            <i class="fa fa-star fa fa-envelope rf-icon" style="background: #56c6c6;"></i>
+                            <input class="form-control rf-input-field" type="email" placeholder="E-mail" required>
+                        </div>
+                        <div class="rf-input-container">
+                            <i class="fa fa-star fa fa-key rf-icon" style="background: #56c6c6;"></i>
+                            <input class="form-control rf-input-field" type="password" placeholder="Hasło" required>
+                        </div>
+                        <div class="rf-input-container">
+                            <i class="fa fa-star fa fa-key rf-icon" style="background: #56c6c6;"></i>
+                            <input class="form-control rf-input-field" type="password" placeholder="Powtórz hasło" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="submit-row" style="margin-bottom: 8px;padding-top: 0px;">
+                    <input class="btn btn-primary btn-block box-shadow" id="submit-id-submit" value="Zarejestruj" type="submit" style="background: rgb(86,198,198);"></input>
+                    <div class="d-flex justify-content-between"></div>
+                </div>
+            </form>
+
+            <div id="login-box-footer" style="padding:10px 20px;padding-bottom:23px;padding-top:18px;">
+                <p style="margin-bottom:0px;">Masz już konto?<a id="register-link" href="#">Zaloguj się!</a></p>
+            </div>
+        </div>
+    </div>
+
+    <%- include("./partials/footer.ejs") %>
+
+    <%- include("./partials/scripts.ejs") %>
+</body>
+
+</html>
