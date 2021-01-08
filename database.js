@@ -16,7 +16,7 @@ async function saveWords(uid, object) {
                         priority: object[key].priority,
                         learnt: false,
                         tries: 0,
-                        dateAdded: new Date().toDateString(),
+                        dateAdded: new Date(),
                         dateLearnt: null,
                         timesInTest: 0
                     }).then(async function() {await updateWordAmount(uid, wordAmount)})
@@ -24,10 +24,8 @@ async function saveWords(uid, object) {
                     await getWordByText(uid, key).then(async (result) => {
                         let priority = (await result.get()).data()['priority']
                         await updateWord(uid, key, {priority: priority+object[key].priority}).then(
-                            console.log(`Priority of word ${key} has been increased`)
                         )
                     })
-                    console.log('Word already exists')
                 }
             })
         }
