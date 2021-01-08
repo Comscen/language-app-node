@@ -17,21 +17,35 @@
     
     <%- include("./partials/navigation.ejs") %>
 
-    <div class="contact-clean">
-        <form class="shadow" method="POST" enctype="multipart/form-data">
-            <h2 class="text-center">Dodaj słowa</h2>
-            <% if (typeof errors != 'undefined') { %>
-                <% for (error of errors) { %>
-                    <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
-                <% } %>
-            <% } %>
-            <div class="form-group files color">
-                <input type="file" name="file">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-5">
+                <div class="contact-clean">
+                    <form class="shadow" method="POST">
+                        <h2 class="text-center">Dodaj ze strony internetowej</h2>
+                        <input class="form-control" type="text" placeholder="Podaj adres URL" required>
+                        <input class="btn border-white" value="Prześlij" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;margin-top:20px" />
+                    </form>
+                </div>
             </div>
-            <p><em>Wspierane formaty plików: jpeg, png, pdf, txt.</em></p>
-            <input class="btn border-white" value="Prześlij" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;" />
-        </form>
+            <div class="col-md-1 text-center">
+                <p style="font-weight: 400;color:#505e6c;font-size:26px"><b>lub</b></p>
+            </div>
+            <div class="col-md-6">
+                <div class="contact-clean">
+                    <form class="shadow" method="POST" enctype="multipart/form-data">
+                        <h2 class="text-center">Dodaj z pliku</h2>
+                        <div class="form-group files color">
+                            <input type="file" multiple="" name="files">
+                        </div>
+                        <p><em>Wspierane formaty plików: jpeg, png, pdf, txt.</em></p>
+                        <input class="btn border-white" value="Prześlij" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;" />
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+    
 
     <%- include("./partials/footer.ejs") %>
 

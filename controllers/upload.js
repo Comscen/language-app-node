@@ -6,6 +6,7 @@ const { nanoid } = require('nanoid');
 const vision = require('@google-cloud/vision');
 const firebaseConfig = require('../firebaseConfig');
 const database = require('../database.js')
+const https = require('https')
 
 const firebase = database.firebase;
 
@@ -42,7 +43,7 @@ const sanitizeData = data => {
     let uniques = [];
     let result = {};
     for (let entry of sanitizedData) {
-        if (entry === '' || entry.length === 1 || !isNaN(entry)) {
+        if (entry === '' || entry.length === 1 || /\d/.test(entry)) {
             continue;
         } else if (!uniques.includes(entry)) {
             uniques.push(entry);
@@ -56,12 +57,66 @@ const sanitizeData = data => {
 }
 
 async function detectTextFromImage(filename) {
-    let [result] = await new vision.ImageAnnotatorClient().textDetection(`gs://${firebaseConfig.storageBucket}/processing/${filename}`);
+    let fileURL = `gs://${firebaseConfig.storageBucket}/processing/${filename}`;
+    let [result] = await new vision.ImageAnnotatorClient().textDetection(fileURL);
+    await firebase.storage().refFromURL(fileURL).delete().then(_ => console.log(`Automatically deleted file: ${filename}`));
     return sanitizeData(result.textAnnotations);
 }
 
-async function detectTextFromPDF() {
+async function detectTextFromPDF(filename) {
+    const client = new vision.ImageAnnotatorClient();
+    const gcsSourceUri = `gs://${firebaseConfig.storageBucket}/processing/${filename}`;
+    const gcsDestinationUri = `gs://${firebaseConfig.storageBucket}/${filename}/`;
 
+    const inputConfig = { mimeType: 'application/pdf', gcsSource: { uri: gcsSourceUri, }, };
+    const outputConfig = { gcsDestination: { uri: gcsDestinationUri, }, };
+    const features = [{ type: 'DOCUMENT_TEXT_DETECTION' }];
+    const request = { requests: [{ inputConfig: inputConfig, features: features, outputConfig: outputConfig, },], };
+
+    const [operation] = await client.asyncBatchAnnotateFiles(request);
+    const [filesResponse] = await operation.promise();
+    const destinationUri = filesResponse.responses[0].outputConfig.gcsDestination.uri;
+    console.log('JSON saved to: ' + destinationUri);
+
+    let listRef = firebase.storage().ref().child(`/${filename}/`)
+
+    let data = []
+    await listRef.listAll().then(async function (res) {
+
+        for (let item of res.items) {
+            await item.getDownloadURL().then(async url => {
+                let getJSON = new Promise((resolve, reject) => {
+                    https.get(url, (response) => {
+                        let chunks_of_data = [];
+
+                        response.on('data', (fragments) => { chunks_of_data.push(fragments); });
+
+                        response.on('error', (error) => { reject(error); });
+
+                        response.on('end', () => {
+                            let response_body = Buffer.concat(chunks_of_data);
+                            resolve(response_body.toString());
+                        });
+
+                    });
+                });
+
+                await getJSON.then(json => {
+                    for (let object of JSON.parse(json).responses) {
+                        object.fullTextAnnotation.text.split(/\s+/g).forEach(part => {
+                            data.push({ description: part });
+                        })
+                    }
+                })
+            });
+        }
+    }).catch(function (error) {
+        console.log(`Something went wrong when loading output files: ${error}`)
+    });
+
+    await firebase.storage().refFromURL(gcsSourceUri).delete().then(_ => console.log(`Automatically deleted file: ${filename}`));
+    // await firebase.storage().refFromURL(destinationUri).delete().then(_ => console.log(`Automatically deleted directory: ${filename}/`));
+    return sanitizeData(data);
 }
 
 async function detectTextFromTextFile() {
@@ -89,26 +144,34 @@ exports.showUploadForm = (req, res) => {
 }
 
 exports.handleUploadForm = async (req, res) => {
-    let mimetype = req.file.mimetype
-    let filename = `${nanoid(32)}.${filetypes[mimetype].extension}`;
+    let data;
+    let errors = [];
+    for (let file of req.files) {
+        console.log("---------------------------------------------")
+        console.log(`Processing file: ${file.originalname}`);
+        let mimetype = file.mimetype;
 
-    if (!filetypes.hasOwnProperty(mimetype))
-        return res.render('upload.ejs', { errors: ['Ten format plików nie jest wspierany!'] })
+        if (!filetypes.hasOwnProperty(mimetype)) {
+            errors.push(`Niepoprawny format pliku: ${file.originalname}`)
+            continue;
+        }
 
-    console.log('Saving file...')
-    await saveFileToBucket(filename, req.file.buffer);
+        let filename = `${nanoid(32)}.${filetypes[mimetype].extension}`;
 
-    console.log('Detecting words...')
-    let data = await filetypes[mimetype].handler(filename);
+        console.log(`Saving file to bucket as: ${filename}`);
+        await saveFileToBucket(filename, file.buffer);
 
-    console.log('Translating words...')
-    data = await translateWords(data);
+        console.log('Detecting words...')
+        let singleData = await filetypes[mimetype].handler(filename);
+        console.log(`Translating ${Object.keys(singleData).length} words...`)
+        singleData = await translateWords(singleData);
 
-    console.log('Saving to database...')
-    // for (let key of Object.keys(data))
-    //     await saveWord(key, data[key].translation, data[key].priority);
-    database.saveWords("Jw9JjfO4dqcRCVYodVBCv4erJck2", data);
+        console.log('Saving to database...')
+        database.saveWords("Jw9JjfO4dqcRCVYodVBCv4erJck2", singleData);
 
-    console.log('Completed!')
-    return res.render('wordList.ejs', { words: data });
+        data = { ...data, ...singleData };
+    }
+    console.log("---------------------------------------------")
+    console.log(`Processed ${req.files.length} file(s).`)
+    return res.render('wordList.ejs', { words: data, errors: errors });
 }
