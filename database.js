@@ -1,5 +1,5 @@
 const database = require('firebase');
-const auth = require('firebase/app'); // for provider handling
+const app = require('firebase/app'); // for provider handling
 const firebaseConfig = require('./firebaseConfig');
 
 var firebase = database.default.initializeApp(firebaseConfig);
@@ -16,7 +16,7 @@ async function saveWords(uid, object) {
                         priority: object[key].priority,
                         learnt: false,
                         tries: 0,
-                        dateAdded: new Date().toDateString(),
+                        dateAdded: new Date(),
                         dateLearnt: null,
                         timesInTest: 0
                     }).then(async function() {await updateWordAmount(uid, wordAmount)})
@@ -45,6 +45,10 @@ async function updateWord(uid, text, metadata) {
 
 async function getWordByText(uid, text) {
     return await firebase.firestore().doc(`users/${uid}/words/${text}`)
+}
+
+async function getWordByIndex(uid, index){
+    await (await firebase.firestore().collection(`users/${uid}/words`).where('id', '==', index).limit(1).get()).docs[0]
 }
 
 async function getWordAmount(uid) {
