@@ -43,14 +43,6 @@ async function updateWord(uid, text, metadata) {
     (await getWordByText(uid, text)).update(metadata)
 }
 
-async function getWordByText(uid, text) {
-    return await firebase.firestore().doc(`users/${uid}/words/${text}`)
-}
-
-async function getWordByIndex(uid, index){
-    await (await firebase.firestore().collection(`users/${uid}/words`).where('id', '==', index).limit(1).get()).docs[0]
-}
-
 async function getWordAmount(uid) {
     return await (await firebase.firestore().doc(`users/${uid}`).get()).data()['wordAmount']
 }
@@ -61,6 +53,42 @@ async function updateWordAmount(uid, amount) {
 
 async function checkIfWordExists(uid, text) {
     return await (await firebase.firestore().doc(`users/${uid}/words/${text}`).get()).exists
+}
+
+async function getWordByText(uid, text) {
+    return await firebase.firestore().doc(`users/${uid}/words/${text}`)
+}
+
+async function getWordByIndex(uid, index){
+    await (await firebase.firestore().collection(`users/${uid}/words`).where('id', '==', index).limit(1).get()).docs[0]
+}
+
+async function getAllWords(uid){
+    return await firebaseService.firebase.firestore().collection(`users/${uid}/words`)
+}
+
+async function getAllNonLearntWords(uid){
+    return await (await getAllWords(uid)).where('learnt', '==', false)
+}
+
+async function getWordsByPriority(uid){
+    return await (await getAllWords(uid)).orderBy('priority')
+}
+
+async function getWordsByLearningTries(uid){
+    return await (await getAllWords(uid)).orderBy('tries')
+}
+
+async function getWordsByTimesInTest(uid){
+    return await (await getAllWords(uid)).orderBy('timesInTest')
+}
+
+async function getWordsByDateAdded(uid){
+    return await (await getAllWords(uid)).orderBy('dateAdded')
+}
+
+async function getWordsByDateLearnt(uid){
+    return await (await getAllWords(uid)).orderBy('dateLearnt')
 }
 
 module.exports = {checkIfWordExists, updateWordAmount, getWordAmount, getWordByText, updateWord, saveWords, firebase}
