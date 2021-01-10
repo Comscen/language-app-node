@@ -9,4 +9,6 @@ router.get("/", uploadController.showUploadForm)
 
 router.post("/", upload.array("files"), uploadController.handleUploadForm)
 
+router.post("/url", uploadController.handleURLForm)
+
 module.exports = router
