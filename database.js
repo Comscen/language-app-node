@@ -2,8 +2,14 @@ const database = require('firebase');
 const app = require('firebase/app'); // for provider handling
 const firebaseConfig = require('./firebaseConfig');
 const nanoid = require('nanoid')
+const admin = require('firebase-admin')
 
 var firebase = database.default.initializeApp(firebaseConfig);
+var firebaseAdmin = admin.initializeApp(firebaseConfig)
+
+async function deleteSession(uid){
+    await firebaseAdmin.auth().revokeRefreshTokens(uid)
+}
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -156,5 +162,6 @@ async function getWordsByDateLearnt(uid) {
 module.exports = {
     firebase, checkIfWordExists, updateWordAmount, getWordAmount, getWordByText, updateWord, saveWords,
     getAllLearntWords, getAllNonLearntWords, getAllWords, getWordByIndex, getWordByText, getWordsByDateAdded,
-    getWordsByDateLearnt, getWordsByLearningTries, getWordsByPriority, getWordsByTimesInTest
+    getWordsByDateLearnt, getWordsByLearningTries, getWordsByPriority, getWordsByTimesInTest, signInWithEmailAndPassword,
+    signUpWithEmailAndPassword, deleteSession
 }
