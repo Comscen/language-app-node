@@ -9,8 +9,14 @@
   },
   "author": "Comscen",
   "contributors": [
-    { "name": "Sebastian Czajkowski", "email": "s19378@pjwstk.edu.pl" },
-    { "name": "Michał Tangri", "email": "s18505@pjwstk.edu.pl" }
+    {
+      "name": "Sebastian Czajkowski",
+      "email": "s19378@pjwstk.edu.pl"
+    },
+    {
+      "name": "Michał Tangri",
+      "email": "s18505@pjwstk.edu.pl"
+    }
   ],
   "license": "MIT",
   "dependencies": {
@@ -22,6 +28,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "firebase": "^8.2.1",
+    "firebase-admin": "^9.4.2",
     "multer": "^1.4.2",
     "nanoid": "^3.1.20",
     "serve-favicon": "^2.5.0",
