@@ -191,7 +191,7 @@ exports.handleUploadForm = async (req, res) => {
 
         data = { ...data, ...singleData };
     }
-    return res.render('wordList.ejs', { words: data, errors: errors });
+    return res.render('wordList.ejs', { words: data, errors: errors, session: req.session});
 }
 
 exports.handleURLForm = async (req, res) => {
@@ -218,5 +218,5 @@ exports.handleURLForm = async (req, res) => {
         data = { ...data, ...singleData };
     })
 
-    return res.render('wordList.ejs', { words: data });
+    return res.render('wordList.ejs', { words: data, session: req.session});
 }
