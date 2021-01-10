@@ -38,7 +38,7 @@
     }
 
     const socket = io('http://localhost:3001');
-    socket.on('<%= uid %>', function(data) {
+    socket.on('<%= session.uid %>', function(data) {
         document.getElementById('loaderMessage').innerText = data.msg;
     });
 </script>
