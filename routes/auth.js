@@ -15,5 +15,7 @@ router.get("/register", authController.showRegisterForm)
 
 router.post("/register", authController.handleRegisterForm)
 
+router.get("/logout", authController.logout)
+
 
 module.exports = router

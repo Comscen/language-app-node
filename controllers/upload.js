@@ -151,8 +151,7 @@ exports.showUploadForm = (req, res) => {
     if (typeof req.session.uid == 'undefined') {
         return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
     }
-    const uid = req.session.uid
-    return res.render('upload.ejs', { uid: uid });
+    return res.render('upload.ejs', {session: req.session});
 }
 
 exports.handleUploadForm = async (req, res) => {
