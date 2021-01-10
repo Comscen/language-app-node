@@ -140,7 +140,7 @@ async function saveFileToBucket(filename, buffer) {
 }
 
 exports.showUploadForm = (req, res) => {
-    return res.render('upload.ejs');
+    return res.render('upload.ejs', {session: req.session});
 }
 
 exports.handleUploadForm = async (req, res) => {

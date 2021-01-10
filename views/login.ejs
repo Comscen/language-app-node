@@ -20,7 +20,9 @@
         <div class="login-box-header">
             <h4 style="color:rgb(139,139,139);margin-bottom:0px;font-weight:400;font-size:27px;">Logowanie</h4>
         </div>
-        
+        <% if (typeof error != 'undefined') { %>
+            <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
+        <% } %>
         <div class="login-box-content">
             <div class="fb-login box-shadow">
                 <a class="d-flex flex-row align-items-center social-login-link" href="#">

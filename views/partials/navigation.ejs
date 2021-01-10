@@ -14,8 +14,12 @@
                 <li class="nav-item"><a class="nav-link" href="/profile">Profil</a></li>
             </ul>
             <span class="navbar-text actions">
-                <a class="login" href="/auth/login">Zaloguj</a>
-                <a class="btn btn-light action-button" role="button" href="/auth/register">Zarejestruj</a>
+                <% if (typeof session.idToken == 'undefined') { %>
+                    <a class="login" href="/auth/login">Zaloguj</a>
+                    <a class="btn btn-light action-button" role="button" href="/auth/register">Zarejestruj</a>
+                <% } else { %>
+                    <a class="btn btn-light action-button" role="button" href="/auth/logout">Wyloguj</a>
+                <% } %>
             </span>
         </div>
     </div>

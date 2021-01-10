@@ -41,9 +41,9 @@ app.use("/upload", uploadRoutes);
 app.use("/profile", profileRoutes);
 app.use("/auth", authRoutes);
 
-app.get("/", (req, res) => res.render('index.ejs'));
-app.get("/license", (req, res) => res.render('license.ejs'));
-app.get("*", (req, res) => res.render('notfound.ejs'));
+app.get("/", (req, res) => res.render('index.ejs', {session: req.session}));
+app.get("/license", (req, res) => res.render('license.ejs', {session: req.session}));
+app.get("*", (req, res) => res.render('notfound.ejs', {session: req.session}));
 
 /* !Routing */
 
