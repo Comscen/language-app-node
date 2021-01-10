@@ -1,6 +1,6 @@
 {
   "name": "arc-lang",
-  "version": "0.0.2",
+  "version": "0.6.4",
   "description": "ARC Project",
   "main": "app.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "nanoid": "^3.1.20",
     "selenium-webdriver": "^4.0.0-alpha.8",
     "serve-favicon": "^2.5.0",
+    "socket.io": "^3.0.5",
     "xhr2": "^0.2.0"
   }
 }
