@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html>
 
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-top: 16px solid#56c6c6;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -13,36 +29,62 @@
 
 </head>
 
+<script src="/js/socket.io.min.js"></script>
+
+<script>
+    function showLoader() {
+        document.getElementById('uploadForm').style = 'display:none';
+        document.getElementById('loader').style.removeProperty('display');
+    }
+
+    const socket = io('http://localhost:3001');
+    socket.on('<%= session.uid %>', function(data) {
+        document.getElementById('loaderMessage').innerText = data.msg;
+    });
+</script>
+
 <body>
     
     <%- include("./partials/navigation.ejs") %>
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-5">
-                <div class="contact-clean">
-                    <form class="shadow" method="POST">
-                        <h2 class="text-center">Dodaj ze strony internetowej</h2>
-                        <input class="form-control" type="text" placeholder="Podaj adres URL" required>
-                        <input class="btn border-white" value="Prześlij" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;margin-top:20px" />
-                    </form>
+        
+        <div id="uploadForm">
+            <div class="row align-items-center">
+                <div class="col-md-5">
+                    <div class="contact-clean">
+                        <form class="shadow" action="/upload/url" method="POST">
+                            <h2 class="text-center">Dodaj ze strony internetowej</h2>
+                            <input class="form-control" name="url" type="text" placeholder="Podaj adres URL" required>
+                            <input class="btn border-white" value="Prześlij" onclick="showLoader()" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;margin-top:20px" />
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-1 text-center">
-                <p style="font-weight: 400;color:#505e6c;font-size:26px"><b>lub</b></p>
-            </div>
-            <div class="col-md-6">
-                <div class="contact-clean">
-                    <form class="shadow" method="POST" enctype="multipart/form-data">
-                        <h2 class="text-center">Dodaj z pliku</h2>
-                        <div class="form-group files color">
-                            <input type="file" multiple="" name="files">
-                        </div>
-                        <p><em>Wspierane formaty plików: jpeg, png, pdf, txt.</em></p>
-                        <input class="btn border-white" value="Prześlij" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;" />
-                    </form>
+                <div class="col-md-1 text-center">
+                    <p style="font-weight: 400;color:#505e6c;font-size:26px"><b>lub</b></p>
+                </div>
+                <div class="col-md-6">
+                    <div class="contact-clean">
+                        <form class="shadow" method="POST" enctype="multipart/form-data">
+                            <h2 class="text-center">Dodaj z pliku</h2>
+                            <div class="form-group files color">
+                                <input type="file" multiple="" name="files">
+                            </div>
+                            <p><em>Wspierane formaty plików: jpeg, png, pdf, txt.</em></p>
+                            <input class="btn border-white" value="Prześlij" onclick="showLoader()" type="submit" style="background: #56c6c6;color: rgb(255,255,255);width: 100%;" />
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="row text-center justify-content-center" id="loader" style="display: none;">
+            <div class="col-md-12">
+                <h3 id="loaderMessage"></h3>
+                <div class="loader center" style="margin:30px auto;padding: 10px;"></div>
+                <p><small>Dodawanie słów może potrwać od kilku sekund do kilku minut (w zależności od rozmiaru pliku)</small></p>
+            </div>
+        </div>
+
     </div>
    
     

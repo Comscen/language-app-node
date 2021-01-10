@@ -7,6 +7,13 @@ const vision = require('@google-cloud/vision');
 const firebaseConfig = require('../firebaseConfig');
 const database = require('../database.js')
 const https = require('https')
+const htmlToPDF = require('html-pdf-node');
+const io = require('socket.io')(3001, {
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"]
+    }
+  });
 
 const firebase = database.firebase;
 
@@ -28,6 +35,22 @@ const filetypes = {
         'handler': detectTextFromTextFile
     }
 }
+
+const getURLContents = url => new Promise((resolve, reject) => {
+    https.get(url, (response) => {
+        let chunks_of_data = [];
+
+        response.on('data', (fragments) => { chunks_of_data.push(fragments); });
+
+        response.on('error', (error) => { reject(error); });
+
+        response.on('end', () => {
+            let response_body = Buffer.concat(chunks_of_data);
+            resolve(response_body.toString());
+        });
+
+    });
+});
 
 const sanitizeData = data => {
     data.shift()
@@ -59,7 +82,7 @@ const sanitizeData = data => {
 async function detectTextFromImage(filename) {
     let fileURL = `gs://${firebaseConfig.storageBucket}/processing/${filename}`;
     let [result] = await new vision.ImageAnnotatorClient().textDetection(fileURL);
-    await firebase.storage().refFromURL(fileURL).delete().then(_ => console.log(`Automatically deleted file: ${filename}`));
+    await firebase.storage().refFromURL(fileURL).delete().then(_ => {});
     return sanitizeData(result.textAnnotations);
 }
 
@@ -76,7 +99,6 @@ async function detectTextFromPDF(filename) {
     const [operation] = await client.asyncBatchAnnotateFiles(request);
     const [filesResponse] = await operation.promise();
     const destinationUri = filesResponse.responses[0].outputConfig.gcsDestination.uri;
-    console.log('JSON saved to: ' + destinationUri);
 
     let listRef = firebase.storage().ref().child(`/${filename}/`)
 
@@ -85,42 +107,30 @@ async function detectTextFromPDF(filename) {
 
         for (let item of res.items) {
             await item.getDownloadURL().then(async url => {
-                let getJSON = new Promise((resolve, reject) => {
-                    https.get(url, (response) => {
-                        let chunks_of_data = [];
-
-                        response.on('data', (fragments) => { chunks_of_data.push(fragments); });
-
-                        response.on('error', (error) => { reject(error); });
-
-                        response.on('end', () => {
-                            let response_body = Buffer.concat(chunks_of_data);
-                            resolve(response_body.toString());
-                        });
-
-                    });
-                });
-
-                await getJSON.then(json => {
+                await getURLContents(url).then(json => {
                     for (let object of JSON.parse(json).responses) {
                         object.fullTextAnnotation.text.split(/\s+/g).forEach(part => {
                             data.push({ description: part });
                         })
                     }
                 })
+                await firebase.storage().refFromURL(url).delete().then(_ => {});
             });
         }
     }).catch(function (error) {
         console.log(`Something went wrong when loading output files: ${error}`)
     });
 
-    await firebase.storage().refFromURL(gcsSourceUri).delete().then(_ => console.log(`Automatically deleted file: ${filename}`));
-    // await firebase.storage().refFromURL(destinationUri).delete().then(_ => console.log(`Automatically deleted directory: ${filename}/`));
+    await firebase.storage().refFromURL(gcsSourceUri).delete().then(_ => {});
     return sanitizeData(data);
 }
 
-async function detectTextFromTextFile() {
-
+async function detectTextFromTextFile(buffer) {
+    let contents = buffer.toString('utf8').replace(/\r?\n|\r/g, ' ').split(' ');
+    let data = [];
+    for (let word of contents)
+        data.push({ description: word });
+    return sanitizeData(data)
 }
 
 async function translateWords(words) {
@@ -134,44 +144,79 @@ async function translateWords(words) {
 }
 
 async function saveFileToBucket(filename, buffer) {
-    await firebase.storage().ref(`processing/${filename}`).put(buffer).then(_ => {
-        console.log(`Uploaded new file: ${filename}`);
-    });
+    await firebase.storage().ref(`processing/${filename}`).put(buffer).then(_ => {});
 }
 
 exports.showUploadForm = (req, res) => {
+    if (typeof req.session.uid == 'undefined') {
+        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
+    }
     return res.render('upload.ejs', {session: req.session});
 }
 
 exports.handleUploadForm = async (req, res) => {
+    
     let data;
     let errors = [];
+    const uid = req.session.uid
+    
     for (let file of req.files) {
-        console.log("---------------------------------------------")
-        console.log(`Processing file: ${file.originalname}`);
+        io.emit(uid, { msg: `Analizowanie pliku: ${file.originalname}` });
         let mimetype = file.mimetype;
 
         if (!filetypes.hasOwnProperty(mimetype)) {
-            errors.push(`Niepoprawny format pliku: ${file.originalname}`)
+            errors.push(`Niepoprawny format pliku: ${file.originalname}`);
             continue;
         }
 
-        let filename = `${nanoid(32)}.${filetypes[mimetype].extension}`;
+        let extension = filetypes[mimetype].extension;
+        
+        if (extension !== 'txt') {
 
-        console.log(`Saving file to bucket as: ${filename}`);
-        await saveFileToBucket(filename, file.buffer);
+            let filename = `${nanoid(32)}.${extension}`;
+            
+            await saveFileToBucket(filename, file.buffer);
 
-        console.log('Detecting words...')
-        let singleData = await filetypes[mimetype].handler(filename);
-        console.log(`Translating ${Object.keys(singleData).length} words...`)
+            io.emit(uid, { msg: 'Wykrywanie słów...' });
+            var singleData = await filetypes[mimetype].handler(filename);
+
+        } else {
+            var singleData = await filetypes[mimetype].handler(file.buffer);
+        }
+        io.emit(uid, { msg: `Tłumaczenie ${Object.keys(singleData).length} słów...` });
         singleData = await translateWords(singleData);
 
-        console.log('Saving to database...')
-        database.saveWords("Jw9JjfO4dqcRCVYodVBCv4erJck2", singleData);
+        io.emit(uid, { msg: 'Zapisywanie słów...'});
+        await database.saveWords(uid, singleData);
 
         data = { ...data, ...singleData };
     }
-    console.log("---------------------------------------------")
-    console.log(`Processed ${req.files.length} file(s).`)
     return res.render('wordList.ejs', { words: data, errors: errors });
+}
+
+exports.handleURLForm = async (req, res) => {
+    const uid = req.session.uid;
+    let filename = `${nanoid(32)}.pdf`;
+    let html = { url: req.body.url };
+
+    io.emit(uid, { msg: `Analizowanie adresu: ${html.url}` });
+    
+    let data;
+    await htmlToPDF.generatePdf(html, { format: 'A4' }).then(async buffer => {
+
+        await saveFileToBucket(filename, buffer);
+
+        io.emit(uid, { msg: 'Wykrywanie słów...' });
+        singleData = await detectTextFromPDF(filename);
+
+        io.emit(uid, { msg: `Tłumaczenie ${Object.keys(singleData).length} słów...` });
+        singleData = await translateWords(singleData);
+
+        io.emit(uid, { msg: 'Zapisywanie słów...'});
+        await database.saveWords(uid, singleData);
+        
+        data = { ...data, ...singleData };
+    })
+
+    return res.render('wordList.ejs', { words: data });
 }
