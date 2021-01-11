@@ -1,11 +1,12 @@
-const { firebase } = require('../database')
+const { firebase, getStats } = require('../database')
 const { nanoid } = require('nanoid');
 
-exports.getOwnProfile = (req, res) => {
+exports.getOwnProfile = async (req, res) => {
     if (typeof req.session.idToken == 'undefined') {
         return res.render('index.ejs', { error: 'Aby wejść na profil należy się zalogować!', session: req.session });
     }
-    return res.render('profile.ejs', { session: req.session });
+    const stats = await getStats(req.session.uid);
+    return res.render('profile.ejs', { session: req.session, stats: stats });
 }
 
 exports.handlePhotoUpload = async (req, res) => {
