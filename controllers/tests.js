@@ -16,7 +16,7 @@ exports.showNewTest = async (req, res) => {
         return res.render('index.ejs', { session: req.session, error: 'Nie możesz wykonać testu bez zalogowania!' });
     }
 
-    let testData = await firebaseService.generateTestQuestions(req.session.uid, 12);
+    let testData = await firebaseService.generateTestQuestions(req.session.uid, 24);
 
     if (testData === null) {
         return res.render('test.ejs', { error: 'Brak wystarczającej ilości nowych przerobionych słówek. Przejdź do seksji "Nauka" i naucz się nowych słówek, aby wygenerować test.', session: req.session })
