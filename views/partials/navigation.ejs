@@ -6,21 +6,36 @@
             <span class="sr-only">Toggle navigation</span>
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navcol-1">
-            <ul class="nav navbar-nav mr-auto">
-                <li class="nav-item"><a class="nav-link" href="/learning">Nauka</a></li>
-                <li class="nav-item"><a class="nav-link" href="/tests">Testy</a></li>
-                <li class="nav-item"><a class="nav-link" href="/upload">Dodaj słowa</a></li>
-                <li class="nav-item"><a class="nav-link" href="/profile">Profil</a></li>
-            </ul>
-            <span class="navbar-text actions">
-                <% if (typeof session.idToken == 'undefined') { %>
-                    <a class="login" href="/auth/login">Zaloguj</a>
-                    <a class="btn btn-light action-button" role="button" href="/auth/register">Zarejestruj</a>
-                <% } else { %>
-                    <a class="btn btn-light action-button" role="button" href="/auth/logout">Wyloguj</a>
-                <% } %>
-            </span>
-        </div>
+        <% if (typeof session.idToken == 'undefined') { %>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto">
+                    <li></li>
+                </ul>
+                <span class="navbar-text actions">
+                    <a class="login" href="/auth/login"><i class="fa fa-sign-in"></i>&nbsp;Zaloguj</a>
+                    <a class="btn btn-light action-button" role="button" href="/auth/register"><i class="fa fa-plus"></i>&nbsp;Zarejestruj</a>
+                </span>
+            </div>
+        <% } else { %>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/learning"><i class="fa fa-graduation-cap"></i>&nbsp;Nauka</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tests"><i class="fa fa-question" style="font-size: 18px;"></i>&nbsp;Testy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload"><i class="fa fa-upload"></i>&nbsp;Dodaj słowa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile"><i class="fa fa-user"></i>&nbsp;Profil</a>
+                    </li>
+                </ul>
+                <span class="navbar-text actions">
+                    <a class="btn btn-light action-button" role="button" href="/auth/logout"><i class="fa fa-sign-out"></i>&nbsp;Wyloguj</a>
+                </span>
+            </div>
+        <% } %>
     </div>
 </nav> 

@@ -24,16 +24,30 @@
             <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
         <% } %>
         <div class="login-box-content">
+
+            <form id="oauth-form" action="/auth/login/oauth" method="POST">
+                <input id="token-input" type="hidden" name="idToken"></input>
+            </form>
+
             <div class="fb-login box-shadow">
-                <a class="d-flex flex-row align-items-center social-login-link" href="#">
-                    <i class="fa fa-facebook" style="margin-left:0px;padding-right:20px;padding-left:22px;width:56px;"></i>Zaloguj z użyciem Facebook'a
+                <a id="facebook-login" class="d-flex flex-row align-items-center social-login-link" href="#" onclick="loginWithFacebook()">
+                    <i class="fa fa-facebook" style="margin-left:0px;padding-right:20px;padding-left:22px;width:56px;"></i>Zaloguj z użyciem Facebooka
+                </a>
+                
+            </div>
+
+            <div class="tw-login box-shadow">
+                <a id="twitter-login" class="d-flex flex-row align-items-center social-login-link" href="#" onclick="loginWithTwitter()">
+                    <i class="fa fa-twitter" style="margin-left:0px;padding-right:20px;padding-left:22px;width:56px;"></i>Zaloguj z użyciem Twittera
                 </a>
             </div>
+
             <div class="gp-login box-shadow">
-                <a class="d-flex flex-row align-items-center social-login-link" style="margin-bottom:10px;" href="#">
+                <a id="google-login" class="d-flex flex-row align-items-center social-login-link" style="margin-bottom:10px;" href="#" onclick="loginWithGoogle()" >
                     <i class="fa fa-google" style="color:rgb(255,255,255);width:56px;"></i>Zaloguj z użyciem Google
                 </a>
             </div>
+
         </div>
 
         <div class="d-flex flex-row align-items-center login-box-seperator-container">
@@ -56,7 +70,7 @@
         </form>
 
         <div id="login-box-footer" style="padding:10px 20px;padding-bottom:23px;padding-top:18px;">
-            <p style="margin-bottom:0px;">Nie masz jeszcze konta?<a id="register-link" href="/auth/register">Zarejestruj się!<a></p>
+            <p style="margin-bottom:0px;">Nie masz jeszcze konta?<a id="register-link" href="/auth/register">Zarejestruj się!</a></p>
         </div>
 
     </div>
@@ -64,6 +78,52 @@
     <%- include("./partials/footer.ejs") %>
 
     <%- include("./partials/scripts.ejs") %>
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-firestore.js"></script>
+
+    <script>
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDplOHnr09YHlR0JbA4Romt6DywRswHPZY",
+            authDomain: "projekt-arc.firebaseapp.com",
+            databaseURL: "https://projekt-arc.firebaseio.com",
+            storageBucket: "projekt-arc.appspot.com"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        
+        async function loginWithGoogle(event){
+            var provider = new firebase.auth.GoogleAuthProvider();
+            await firebase.auth().signInWithPopup(provider);
+            await firebase.auth().currentUser.getIdToken().then(idToken => {
+                document.getElementById('token-input').value = idToken;
+                document.getElementById('oauth-form').submit();
+            });
+        }
+
+        async function loginWithFacebook(event){
+            var provider = new firebase.auth.FacebookAuthProvider();
+            await firebase.auth().signInWithPopup(provider);
+            await firebase.auth().currentUser.getIdToken().then(idToken => {
+                console.log(idToken)
+                document.getElementById('token-input').value = idToken;
+                document.getElementById('oauth-form').submit();
+            });
+        }
+
+        async function loginWithTwitter(event){
+            var provider = new firebase.auth.TwitterAuthProvider();
+            await firebase.auth().signInWithPopup(provider);
+            await firebase.auth().currentUser.getIdToken().then(idToken => {
+                console.log(idToken)
+                document.getElementById('token-input').value = idToken;
+                document.getElementById('oauth-form').submit();
+            });
+        }
+
+      </script>
 
 </body>
 
