@@ -7,9 +7,7 @@ router.get("/login", authController.showLoginForm)
 
 router.post("/login", authController.handleEmailLogin)
 
-router.post("/login/google", authController.handleGoogleLogin)
-
-router.post("/login/facebook", authController.handleFacebookLogin)
+router.post("/login/oauth", authController.handleOAuthLogin)
 
 router.get("/register", authController.showRegisterForm)
 

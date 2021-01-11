@@ -1,5 +1,4 @@
 const database = require('firebase');
-const app = require('firebase/app'); // for provider handling
 const firebaseConfig = require('./firebaseConfig');
 const nanoid = require('nanoid')
 const admin = require('firebase-admin')
@@ -163,5 +162,5 @@ module.exports = {
     firebase, checkIfWordExists, updateWordAmount, getWordAmount, getWordByText, updateWord, saveWords,
     getAllLearntWords, getAllNonLearntWords, getAllWords, getWordByIndex, getWordByText, getWordsByDateAdded,
     getWordsByDateLearnt, getWordsByLearningTries, getWordsByPriority, getWordsByTimesInTest, signInWithEmailAndPassword,
-    signUpWithEmailAndPassword, deleteSession
+    signUpWithEmailAndPassword, deleteSession, admin
 }

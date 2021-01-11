@@ -1,10 +1,10 @@
 const firebaseService = require('../database')
 
 exports.showLoginForm = (req, res) => {
-    if(typeof req.session.idToken != 'undefined'){
-        return res.render('index.ejs', {session:req.session, error: 'Jesteś już zalogowany!'})
+    if (typeof req.session.idToken != 'undefined') {
+        return res.render('index.ejs', { session: req.session, error: 'Jesteś już zalogowany!' })
     }
-    return res.render('login.ejs', {session: req.session});
+    return res.render('login.ejs', { session: req.session });
 }
 
 exports.handleEmailLogin = async (req, res) => {
@@ -12,9 +12,9 @@ exports.handleEmailLogin = async (req, res) => {
         req.session.uid = user.user.uid;
         user.user.getIdToken(true).then(token => {
             req.session.idToken = token
-            return res.render('index.ejs', {message: 'Pomyślnie zalogowano!', session: req.session })
+            return res.render('index.ejs', { message: 'Pomyślnie zalogowano!', session: req.session })
         }).catch(error => {
-            console.log(`BLAD TOKENU ${error}`)
+            console.log(`TOKEN ERROR (LOGIN) ${error}`)
         })
     }).catch(error => {
         switch (error.code) {
@@ -28,23 +28,26 @@ exports.handleEmailLogin = async (req, res) => {
     })
 }
 
-exports.handleGoogleLogin = (req, res) => {
-
-}
-
-exports.handleFacebookLogin = (req, res) => {
-
+exports.handleOAuthLogin = async (req, res) => {
+    const idToken = req.body.idToken;
+    await firebaseService.admin.auth().verifyIdToken(idToken).then(decodedToken => {
+        req.session.uid = decodedToken.uid;
+        req.session.idToken = idToken;
+    }).catch(error => {
+        console.log(`Error while saving data from OAuth login: ${error}`);
+    })
+    return res.render('index.ejs', {session: req.session, message: 'Pomyślnie zalogowano!'});
 }
 
 exports.showRegisterForm = (req, res) => {
-    if(typeof req.session.idToken != 'undefined'){
-        return res.render('index.ejs', {session:req.session, error: 'Jesteś już zalogowany! Nie możesz utworzyć konta.'})
+    if (typeof req.session.idToken != 'undefined') {
+        return res.render('index.ejs', { session: req.session, error: 'Jesteś już zalogowany! Nie możesz utworzyć konta.' })
     }
-    return res.render('register.ejs', {session: req.session});
+    return res.render('register.ejs', { session: req.session });
 }
 
 exports.handleRegisterForm = async (req, res) => {
-    
+
 
     if (req.body.password !== req.body.repeatPassword) {
         return res.render('register.ejs', { error: 'Podane hasła się nie zgadzają!', session: req.session });
@@ -54,12 +57,12 @@ exports.handleRegisterForm = async (req, res) => {
             req.session.uid = user.user.uid;
             user.user.getIdToken(true).then(token => {
                 req.session.idToken = token;
-                return res.render('index.ejs', {message: 'Pomyślnie zarejestrowano! Zostałeś automatycznie zalogowany.', session: req.session })
+                return res.render('index.ejs', { message: 'Pomyślnie zarejestrowano! Zostałeś automatycznie zalogowany.', session: req.session })
             }).catch(error => {
-                console.log(`BLAD TOKENU ${error}`)
+                console.log(`TOKEN ERRROR (REGISTER) ${error}`)
             })
         }).catch(error => {
-            console.log(`BLAD FIRESTORE ${error}`)
+            console.log(`FIRESTORE ERROR: ${error}`)
         })
     }).catch(error => {
         switch (error.code) {
