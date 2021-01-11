@@ -172,7 +172,6 @@ async function getStats(uid) {
         await (wordsQuery.orderBy('dateLearnt', 'desc').limit(10).get()).then(words => {
             statsData['words']= {}
             words.forEach(word => {
-                console.log(word.id)
                 statsData['words'][word.id] = word.data()['translation']
             })
         }).catch(error => {
