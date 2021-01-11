@@ -63,8 +63,9 @@ async function generateTestQuestions(uid) {
     let questionData;
     let indexes;
     let error = false;
-    (await (await getAllNonLearntWords(uid)).where('appeared', '==', true).get().then(documents => {
-        if(documents.size < 25){
+    await getAllNonLearntWords(uid).where('appeared', '==', true).get().then(documents => {
+        console.log(documents.size)
+        if(documents.size < 24){
             error = true;
             return;
         }
@@ -74,10 +75,10 @@ async function generateTestQuestions(uid) {
                 indexes.push(random);
                 questionData[documents.docs[random]]['translation'] = documents.docs[random].data()['translation'];
             }
-        } while (indexes.length < 15);
+        } while (indexes.length < 24);
         questionData['dateCreated'] = new Date();
-    }));
-    return !error ? questionData : error;
+    });
+    return error ? null : questionData;
 }
 
 async function signInWithEmailAndPassword(email, password) {
@@ -121,12 +122,12 @@ async function getWordByIndex(uid, index) {
     return await (await firebase.firestore().collection(`users/${uid}/words`).where('id', '==', index).limit(1).get()).docs[0]
 }
 
-async function getAllWords(uid) {
-    return await firebase.firestore().collection(`users/${uid}/words`)
+function getAllWords(uid) {
+    return firebase.firestore().collection(`users/${uid}/words`)
 }
 
-async function getAllNonLearntWords(uid) {
-    return await (await getAllWords(uid)).where('learnt', '==', false)
+function getAllNonLearntWords(uid) {
+    return getAllWords(uid).where('learnt', '==', false)
 }
 
 async function getAllLearntWords(uid) {
@@ -175,5 +176,6 @@ module.exports = {
     getWordsByTimesInTest,
     signInWithEmailAndPassword,
     signUpWithEmailAndPassword,
-    deleteSession
+    deleteSession,
+    generateTestQuestions
 }
