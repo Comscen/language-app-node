@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+
+    #picture:hover {
+        filter: brightness(300%);
+        display: block;
+        z-index: 2;
+    }
+</style>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ARC</title>
+
+    <%- include("./partials/stylesheets.ejs") %>
+
+</head>
+
+<body>
+
+    <%- include("./partials/navigation.ejs") %>
+
+    <div class="container">
+        
+        <% if (typeof error != 'undefined') { %>
+        <div class="row">
+            <div class="col-md-12">
+                    <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
+                </div>
+            </div>
+        <% } else { %>
+
+            <form id="photo-form" action="/profile/editPhoto" method="POST" enctype="multipart/form-data" style="display: none;">
+                <input type="file" name="photo" id="photo" onchange="document.getElementById('photo-form').submit()">
+            </form>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-12 text-center align-self-center" style="text-align: left;">
+                            <% if (typeof session.photoURL == 'undefined') { %>
+                                <i id="picture" class="fa fa-user-circle-o" style="font-size: 130px;" onclick="document.getElementById('photo').click();"></i>
+                            <% } else { %>
+                                <img src="<%= session.photoURL %>" width="130px" style="border-radius: 50%;" alt="user photo">
+                            <% } %>
+                            <h1 class="display-4 text-center"><%= session.name %></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center" style="margin-top: 20px">
+                <div class="col-md-6">
+                    <h3>Ostatnie testy</h3>
+                    <p><em>Liczba wykonanych testów: </em><strong><em>2</em></strong></p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">Liczba punktów</th>
+                                    <th>Data wykonania</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>20/24</td>
+                                    <td>11.01.2021 14:27</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Ostatnio dodane słowa</h3>
+                    <p><em>Liczba wszystkich słów:</em><strong><em>109</em></strong></p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">Słowo</th>
+                                    <th>Tłumaczenie</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>sell</td>
+                                    <td>sprzedać</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+    <%- include("./partials/footer.ejs") %>
+    <%- include("./partials/scripts.ejs") %>
+
+</body>
+
+</html>
