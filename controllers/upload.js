@@ -147,15 +147,15 @@ async function saveFileToBucket(filename, buffer) {
     await firebase.storage().ref(`processing/${filename}`).put(buffer).then(_ => {});
 }
 
-exports.showUploadForm = (req, res) => {
+
+async function showUploadForm (req, res) {
     if (typeof req.session.uid == 'undefined') {
         return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
     }
     return res.render('upload.ejs', {session: req.session});
 }
 
-exports.handleUploadForm = async (req, res) => {
-    
+async function handleUploadForm (req, res) {
     let data;
     let errors = [];
     const uid = req.session.uid
@@ -194,7 +194,7 @@ exports.handleUploadForm = async (req, res) => {
     return res.render('wordList.ejs', { words: data, errors: errors, session: req.session});
 }
 
-exports.handleURLForm = async (req, res) => {
+async function handleURLForm (req, res) {
     const uid = req.session.uid;
     let filename = `${nanoid(32)}.pdf`;
     let html = { url: req.body.url };
@@ -219,4 +219,19 @@ exports.handleURLForm = async (req, res) => {
     })
 
     return res.render('wordList.ejs', { words: data, session: req.session});
+}
+
+module.exports = { 
+    filetypes,
+    htmlToPDF,
+    getURLContents,
+    sanitizeData,
+    detectTextFromImage,
+    detectTextFromPDF,
+    detectTextFromTextFile,
+    saveFileToBucket,
+    translateWords,
+    handleURLForm,
+    handleUploadForm,
+    showUploadForm
 }

@@ -3,12 +3,12 @@ var router = express.Router()
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() })
 
-var uploadController = require('../controllers/upload')
+var { showUploadForm, handleUploadForm, handleURLForm} = require('../controllers/upload')
 
-router.get("/", uploadController.showUploadForm)
+router.get("/", showUploadForm)
 
-router.post("/", upload.array("files"), uploadController.handleUploadForm)
+router.post("/", upload.array("files"), handleUploadForm)
 
-router.post("/url", uploadController.handleURLForm)
+router.post("/url", handleURLForm)
 
 module.exports = router

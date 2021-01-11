@@ -27,7 +27,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
-/* Routing */
+/* API Routing */
+
+const uploadAPIRoutes = require('./routes/upload-api');
+
+app.use("/api/upload", uploadAPIRoutes);
+
+/* !API Routing */
+
+/* App Routing */
 
 const learningRoutes = require('./routes/learning');
 const testsRoutes = require('./routes/tests');
@@ -45,7 +53,7 @@ app.get("/", (req, res) => res.render('index.ejs', {session: req.session}));
 app.get("/license", (req, res) => res.render('license.ejs', {session: req.session}));
 app.get("*", (req, res) => res.render('notfound.ejs', {session: req.session}));
 
-/* !Routing */
+/* !App Routing */
 
 app.listen(process.env.PORT || 3000, function () {
     console.log(`Application started on PORT: ${process.env.PORT || 3000}`);

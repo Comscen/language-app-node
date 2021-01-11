@@ -35,11 +35,8 @@ async function saveWords(uid, object) {
                 } else {
                     await getWordByText(uid, key).then(async (result) => {
                         let priority = (await result.get()).data()['priority']
-                        await updateWord(uid, key, { priority: priority + object[key].priority }).then(
-                            console.log(`Priority of word ${key} has been increased`)
-                        )
+                        await updateWord(uid, key, { priority: priority + object[key].priority }).then()
                     })
-                    console.log('Word already exists')
                 }
             })
         }
@@ -157,10 +154,26 @@ async function getWordsByDateLearnt(uid) {
 }
 
 
-
 module.exports = {
-    firebase, checkIfWordExists, updateWordAmount, getWordAmount, getWordByText, updateWord, saveWords,
-    getAllLearntWords, getAllNonLearntWords, getAllWords, getWordByIndex, getWordByText, getWordsByDateAdded,
-    getWordsByDateLearnt, getWordsByLearningTries, getWordsByPriority, getWordsByTimesInTest, signInWithEmailAndPassword,
-    signUpWithEmailAndPassword, deleteSession, admin
+    firebase,
+    admin, 
+    checkIfWordExists,
+    updateWordAmount,
+    getWordAmount,
+    getWordByText,
+    updateWord,
+    saveWords,
+    getAllLearntWords,
+    getAllNonLearntWords,
+    getAllWords,
+    getWordByIndex,
+    getWordByText,
+    getWordsByDateAdded,
+    getWordsByDateLearnt,
+    getWordsByLearningTries,
+    getWordsByPriority,
+    getWordsByTimesInTest,
+    signInWithEmailAndPassword,
+    signUpWithEmailAndPassword,
+    deleteSession
 }
