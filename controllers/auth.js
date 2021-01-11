@@ -42,6 +42,11 @@ exports.handleOAuthLogin = async (req, res) => {
     }).catch(error => {
         console.log(`Error while saving data from OAuth login: ${error}`);
     })
+    await firebaseService.firebase.firestore().doc(`users/${req.session.uid}`).set({ wordAmount: 0, name: req.session.name}).then(_ => {
+
+    }).catch(error => {
+        console.log(`FIRESTORE ERROR: ${error}`);
+    })
     return res.render('index.ejs', {session: req.session, message: 'Pomyślnie zalogowano!'});
 }
 

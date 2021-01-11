@@ -1,6 +1,6 @@
 const database = require('firebase');
 const firebaseConfig = require('./firebaseConfig');
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const admin = require('firebase-admin');
 const { addConsoleHandler } = require('selenium-webdriver/lib/logging');
 
@@ -44,29 +44,29 @@ async function saveWords(uid, object) {
     })
 }
 
-async function saveTest(uid, testResult) {
-    let id = nanoid(24)
+async function saveTest(uid, testResults) {
+    let id = nanoid(24);
     await firebase.firestore().doc(`users/${uid}/tests/${id}`).set({
-        points: 0,
-        maxPoints: Object.keys(testResult).length,
-        dateCreated: testResult['dateCreated'],
-        dateFinished: new Date()
-    })
-    for (let key of Object.keys(testResult)) {
+        points: testResults.points,
+        maxPoints: testResults.maxPoints,
+        dateCreated: new Date(testResults.dateStarted),
+        dateFinished: new Date(testResults.dateFinished)
+    });
+    for (let key of Object.keys(testResults.words)) {
         await firebase.firestore().doc(`users/${uid}/tests/${id}/words/${key}`).set({
-            translation: testResult[key].translation,
-            userInput: testResult[key].input
-        })
+            translation: testResults.words[key].translation,
+            userInput: testResults.words[key].answer
+        });
     }
 }
 
-async function generateTestQuestions(uid) {
+async function generateTestQuestions(uid, amount=24) {
     let questionData = {};
     let indexes = [];
     let error = false;
     await getAllNonLearntWordsReference(uid).then(async words => {
         await words.where('appeared', '==', true).get().then(documents => {
-            if (documents.size < 24) {
+            if (documents.size < amount) {
                 error = true;
                 return;
             }
@@ -76,7 +76,7 @@ async function generateTestQuestions(uid) {
                     indexes.push(random);
                     questionData[documents.docs[random].id] = documents.docs[random].data()['translation']
                 }
-            } while (indexes.length < 24);
+            } while (indexes.length < amount);
             questionData['dateCreated'] = new Date();
         }).catch(error => {
             console.log(error)
@@ -84,7 +84,7 @@ async function generateTestQuestions(uid) {
     }).catch(error => {
         console.log(error)
     })
-    return !error ? questionData : error;
+    return error ? null : questionData;
 }
 
 async function signInWithEmailAndPassword(email, password) {
@@ -96,13 +96,18 @@ async function signUpWithEmailAndPassword(email, password) {
 }
 
 async function updateWord(uid, text, metadata) {
-    let keys = Object.keys(metadata)
-    let updateData = {};
-    for (key of keys) {
-        updateData[key] = metadata[key];
-    }
     (await getWordByTextReference(uid, text)).update(metadata)
 }
+
+async function updateWords(uid, metadata) {
+    Object.keys(metadata).forEach(async object => {
+        let updateData = {}
+        Object.keys(metadata[object]).forEach(key =>{
+            updateData[key] = metadata[object][key]
+        })
+        await updateWord(uid, object, updateData)
+    })
+} 
 
 async function getWordAmount(uid) {
     return await (await firebase.firestore().doc(`users/${uid}`).get()).data()['wordAmount']
@@ -154,5 +159,6 @@ module.exports = {
     signInWithEmailAndPassword,
     signUpWithEmailAndPassword, 
     deleteSession, 
-    generateTestQuestions
+    generateTestQuestions,
+    saveTest
 }

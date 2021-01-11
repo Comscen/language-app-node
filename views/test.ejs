@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ARC</title>
+
+    <%- include("./partials/stylesheets.ejs") %>
+
+    <link rel="stylesheet" href="/css/countdown-timer.css">
+
+</head>
+
+<body>
+
+    <%- include("./partials/navigation.ejs") %>
+
+    <div class="container">
+        <% if (typeof session.testData != 'undefined') { %>
+            <form id="test-form" method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="wrapper">
+                                    <div class="container">
+                                        <h1>Pozostały czas</h1>
+                                        <div id="clockdiv">
+                                            <div class="clock-wrapper" style="background: #56c6c6;"><span class="minutes" style="background: #409696;"> </span>
+                                                <div class="smalltext">
+                                                    <p>Minutes </p>
+                                                </div>
+                                            </div>
+                                            <div class="clock-wrapper" style="background: #56c6c6;"><span class="seconds" style="background: #409696;"> </span>
+                                                <div class="smalltext">
+                                                    <p>Seconds </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <td>Ilość słów</td>
+                                                <td><strong>24</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Data rozpoczęcia testu</td>
+                                                <td><strong id="start-date">11.01.2020 12:13</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Czas na rozwiązanie</td>
+                                                <td><strong>6 minut</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <% 
+                                var i = 0;
+                                const testData = session.testData;
+                                var words= Object.keys(testData);
+                            %>
+                            
+                            <div class="col">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50%;">Słowo</th>
+                                                <th>Tłumaczenie</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (; i < (words.length - 1) / 2; i++) { %>
+                                                <tr>
+                                                    <td><%= words[i] %></td>
+                                                    <td><input type="text" name="answers[]" class="form-control"></td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+    
+                            <div class="col">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50%;">Słowo</th>
+                                                <th>Tłumaczenie</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for (; i < words.length - 1; i++) { %>
+                                                <tr>
+                                                    <td><%= testData[words[i]] %></td>
+                                                    <td><input type="text" name="answers[]" class="form-control"></td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="hidden" name="testData" value="<%= testData %>">
+                    <div class="col-md-12"><button class="btn" type="submit" style="background: #56c6c6;width: 100%;color: rgb(255,255,255);">Zakończ test</button></div>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
+        <% } %>
+    </div>
+
+    <%- include("./partials/footer.ejs") %>
+    <%- include("./partials/scripts.ejs") %>
+
+    <script src="/js/countdown-timer.js"></script>
+
+    <script>
+        window.onload = _ => {
+            const date = new Date();
+
+            const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();       
+            const month = (date.getMonth() + 1) < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+            const hour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
+            const minute = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+
+            document.getElementById('start-date').innerText = `${day}-${month}-${date.getFullYear()} ${hour}:${minute}`
+
+            const deadline = new Date(Date.parse(new Date()) + 6 * 60 * 1000);
+            initializeClock('clockdiv', deadline);
+
+            var timeinterval = setInterval(() => {
+                if (Date.parse(deadline) - Date.parse(new Date()) <= 0)
+                    document.getElementById('test-form').submit();
+            }, 1000);
+        }
+
+
+    </script>
+
+</body>
+
+</html>
