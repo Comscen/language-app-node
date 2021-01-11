@@ -14,12 +14,18 @@
 
     <%- include("./partials/navigation.ejs") %>
 
-    <% if (typeof message != 'undefined') { %>
-        <div class="alert alert-success" role="alert"><span><%= message %></span></div>
-    <% } %>
-    <% if (typeof error != 'undefined') { %>
-        <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
-    <% } %>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <% if (typeof message != 'undefined') { %>
+                    <div class="alert alert-success" role="alert"><span><%= message %></span></div>
+                <% } %>
+                <% if (typeof error != 'undefined') { %>
+                    <div class="alert alert-danger" role="alert"><span><%= error %></span></div>
+                <% } %>
+            </div>
+        </div>
+    </div>
 
     <%- include("./partials/footer.ejs") %>
     <%- include("./partials/scripts.ejs") %>
