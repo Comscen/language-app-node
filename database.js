@@ -135,7 +135,6 @@ async function updateWords(uid, metadata) {
     })
 } 
 
-
 async function getWordAmount(uid) {
     return await (await firebase.firestore().doc(`users/${uid}`).get()).data()['wordAmount']
 }
