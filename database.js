@@ -1,6 +1,6 @@
 const database = require('firebase');
 const firebaseConfig = require('./firebaseConfig');
-const nanoid = require('nanoid')
+const { nanoid } = require('nanoid')
 const admin = require('firebase-admin');
 const { addConsoleHandler } = require('selenium-webdriver/lib/logging');
 
@@ -36,40 +36,37 @@ async function saveWords(uid, object) {
                 } else {
                     await getWordByTextReference(uid, key).then(async (result) => {
                         let priority = (await result.get()).data()['priority']
-                        await updateWord(uid, key, { priority: priority + object[key].priority }).then(
-                            console.log(`Priority of word ${key} has been increased`)
-                        )
+                        await updateWord(uid, key, { priority: priority + object[key].priority }).then()
                     })
-                    console.log('Word already exists')
                 }
             })
         }
     })
 }
 
-async function saveTest(uid, testResult) {
-    let id = nanoid(24)
+async function saveTest(uid, testResults) {
+    let id = nanoid(24);
     await firebase.firestore().doc(`users/${uid}/tests/${id}`).set({
-        points: 0,
-        maxPoints: Object.keys(testResult).length,
-        dateCreated: testResult['dateCreated'],
-        dateFinished: new Date()
-    })
-    for (let key of Object.keys(testResult)) {
+        points: testResults.points,
+        maxPoints: testResults.maxPoints,
+        dateCreated: new Date(testResults.dateStarted),
+        dateFinished: new Date(testResults.dateFinished)
+    });
+    for (let key of Object.keys(testResults.words)) {
         await firebase.firestore().doc(`users/${uid}/tests/${id}/words/${key}`).set({
-            translation: testResult[key].translation,
-            userInput: testResult[key].input
-        })
+            translation: testResults.words[key].translation,
+            userInput: testResults.words[key].answer
+        });
     }
 }
 
-async function generateTestQuestions(uid) {
+async function generateTestQuestions(uid, amount=24) {
     let questionData = {};
     let indexes = [];
     let error = false;
     await getAllNonLearntWordsReference(uid).then(async words => {
         await words.where('appeared', '==', true).get().then(documents => {
-            if (documents.size < 24) {
+            if (documents.size < amount) {
                 error = true;
                 return;
             }
@@ -79,7 +76,7 @@ async function generateTestQuestions(uid) {
                     indexes.push(random);
                     questionData[documents.docs[random].id] = documents.docs[random].data()['translation']
                 }
-            } while (indexes.length < 24);
+            } while (indexes.length < amount);
             questionData['dateCreated'] = new Date();
         }).catch(error => {
             console.log(error)
@@ -87,7 +84,7 @@ async function generateTestQuestions(uid) {
     }).catch(error => {
         console.log(error)
     })
-    return !error ? questionData : error;
+    return error ? null : questionData;
 }
 
 async function generateWordsForLearning(uid) {
@@ -136,7 +133,7 @@ async function updateWords(uid, metadata) {
         })
         await updateWord(uid, object, updateData)
     })
-}
+} 
 
 async function getWordAmount(uid) {
     return await (await firebase.firestore().doc(`users/${uid}`).get()).data()['wordAmount']
@@ -215,7 +212,24 @@ async function getUserById(uid){
 }
 
 module.exports = {
-    firebase, admin, checkIfWordExists, updateWordAmount, getWordAmount, getWordByText: getWordByTextReference, updateWord, saveWords,
-    getAllLearntWords: getAllLearntWordsReference, getAllNonLearntWords: getAllNonLearntWordsReference, getAllWords: getAllWordsReference, getWordByIndex, getWordByText: getWordByTextReference, signInWithEmailAndPassword,
-    signUpWithEmailAndPassword, deleteSession, generateTestQuestions, generateWordsForLearning, getUserById
+    firebase, 
+    admin,
+    checkIfWordExists, 
+    updateWordAmount, 
+    getWordAmount,
+    getWordByText: getWordByTextReference, 
+    updateWord, 
+    saveWords,
+    getAllLearntWords: getAllLearntWordsReference, 
+    getAllNonLearntWords: 
+    getAllNonLearntWordsReference, 
+    getAllWords: getAllWordsReference, 
+    getWordByIndex, 
+    getWordByText: getWordByTextReference, 
+    signInWithEmailAndPassword,
+    signUpWithEmailAndPassword, 
+    deleteSession, 
+    generateTestQuestions,
+    saveTest,
+    getStats
 }
