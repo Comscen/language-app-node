@@ -5,8 +5,6 @@
 
     #picture:hover {
         filter: brightness(300%);
-        display: block;
-        z-index: 2;
     }
 </style>
 
@@ -54,6 +52,8 @@
                         <div class="col-12 text-center align-self-center" style="text-align: left;">
                             <% if (typeof session.photoURL == 'undefined') { %>
                                 <i id="picture" class="fa fa-user-circle-o" style="font-size: 130px;" onclick="document.getElementById('photo').click();"></i>
+                            <% } else if (typeof session.oauth == 'undefined') { %>
+                                <img id="picture" src="<%= session.photoURL %>" width="130px" onclick="document.getElementById('photo').click();" style="border-radius: 50%;" alt="user photo">
                             <% } else { %>
                                 <img src="<%= session.photoURL %>" width="130px" style="border-radius: 50%;" alt="user photo">
                             <% } %>
