@@ -108,13 +108,13 @@ exports.handleOAuthLogin = async (req, res) => {
         await (await firebaseService.firebase.firestore().doc(`users/${req.session.uid}`).get()).data()['wordAmount'];
     } catch (error) {
         /* If error is thrown, wordAmount field with initial value 0 shall be created */
-        await firebaseService.firebase.firestore().doc(`users/${req.session.uid}`).set({ wordAmount: 0, name: req.session.name}).then(_ => {
+        await firebaseService.firebase.firestore().doc(`users/${req.session.uid}`).set({ wordAmount: 0, name: req.session.name }).then(_ => {
 
         }).catch(error => {
             console.log(`FIRESTORE ERROR: ${error}`);
         })
     }
-    return res.render('index.ejs', {session: req.session, message: 'Pomyślnie zalogowano!'});
+    return res.render('index.ejs', { session: req.session, message: 'Pomyślnie zalogowano!' });
 }
 
 
@@ -172,7 +172,7 @@ exports.handleRegisterForm = async (req, res) => {
     firebaseService.signUpWithEmailAndPassword(req.body.email, req.body.password).then(user => {
 
         /* Save newly created account to database and add 'wordAmount' field to it */
-        firebaseService.firebase.firestore().doc(`users/${user.user.uid}`).set({ wordAmount: 0, name: req.body.name}).then(_ => {
+        firebaseService.firebase.firestore().doc(`users/${user.user.uid}`).set({ wordAmount: 0, name: req.body.name }).then(_ => {
 
             /* Save necessary data to user's session */
             req.session.uid = user.user.uid;
@@ -183,7 +183,7 @@ exports.handleRegisterForm = async (req, res) => {
                 req.session.idToken = token;
 
                 /* Save user's name to database and redirect him to index page to display a success message */
-                user.user.updateProfile({displayName: req.body.name}).then(_ => {
+                user.user.updateProfile({ displayName: req.body.name }).then(_ => {
                     return res.render('index.ejs', { message: 'Pomyślnie zarejestrowano! Zostałeś automatycznie zalogowany.', session: req.session });
                 })
             }).catch(error => {
@@ -232,5 +232,5 @@ exports.logout = async (req, res) => {
         req.session.oauth = undefined;
         return res.render('index.ejs', { message: 'Pomyślnie wylogowano.', session: req.session });
     });
-    
+
 }

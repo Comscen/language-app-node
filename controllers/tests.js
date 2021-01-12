@@ -63,7 +63,7 @@ exports.showNewTest = async (req, res) => {
  *  @param {Response} res - Response to be sent to client.
  */
 exports.saveTest = async (req, res) => {
-    
+
     const uid = req.session.uid;
     if (typeof idToken == 'undefined') {
         return res.render('index.ejs', { session: req.session, error: 'Nie możesz zapisać testu bez zalogowania!' });
@@ -104,7 +104,7 @@ exports.saveTest = async (req, res) => {
 
     /* Array of words in english */
     let keys = Object.keys(testData);
-    
+
     /* Iteration variable */
     let i = 0;
 
@@ -143,7 +143,7 @@ exports.saveTest = async (req, res) => {
         }
         results.words[word] = { translation: testData[word], answer: answer, correct: correct }
     }
-    
+
     /* Save a test and it's results to database */
     await firebaseService.saveTest(uid, results)
 

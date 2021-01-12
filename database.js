@@ -60,7 +60,7 @@ async function saveTest(uid, testResults) {
     }
 }
 
-async function generateTestQuestions(uid, amount=24) {
+async function generateTestQuestions(uid, amount = 24) {
     let questionData = {};
     let indexes = [];
     let error = false;
@@ -128,12 +128,12 @@ async function updateWord(uid, text, metadata) {
 async function updateWords(uid, metadata) {
     Object.keys(metadata).forEach(async object => {
         let updateData = {}
-        Object.keys(metadata[object]).forEach(key =>{
+        Object.keys(metadata[object]).forEach(key => {
             updateData[key] = metadata[object][key]
         })
         await updateWord(uid, object, updateData)
     })
-} 
+}
 
 async function getWordAmount(uid) {
     return await (await firebase.firestore().doc(`users/${uid}`).get()).data()['wordAmount']
@@ -169,7 +169,7 @@ async function getStats(uid) {
     await getAllWordsReference(uid).then(async wordsQuery => {
         statsData['wordsAmount'] = (await wordsQuery.get()).docs.length
         await (wordsQuery.orderBy('dateLearnt', 'desc').limit(10).get()).then(words => {
-            statsData['words']= {}
+            statsData['words'] = {}
             words.forEach(word => {
                 statsData['words'][word.id] = word.data()['translation']
             })
@@ -206,29 +206,30 @@ async function getAllLearntWordsReference(uid) {
     return (await getAllWordsReference(uid)).where('learnt', '==', true)
 }
 
-async function getUserById(uid){
+async function getUserById(uid) {
     return await admin.auth().getUser(uid)
 }
 
 module.exports = {
-    firebase, 
+    firebase,
     admin,
-    checkIfWordExists, 
-    updateWordAmount, 
+    checkIfWordExists,
+    updateWordAmount,
     getWordAmount,
-    getWordByText: getWordByTextReference, 
-    updateWord, 
+    getWordByText: getWordByTextReference,
+    updateWord,
     saveWords,
-    getAllLearntWords: getAllLearntWordsReference, 
-    getAllNonLearntWords: 
-    getAllNonLearntWordsReference, 
-    getAllWords: getAllWordsReference, 
-    getWordByIndex, 
-    getWordByText: getWordByTextReference, 
+    getAllLearntWords: getAllLearntWordsReference,
+    getAllNonLearntWords:
+        getAllNonLearntWordsReference,
+    getAllWords: getAllWordsReference,
+    getWordByIndex,
+    getWordByText: getWordByTextReference,
     signInWithEmailAndPassword,
-    signUpWithEmailAndPassword, 
-    deleteSession, 
+    signUpWithEmailAndPassword,
+    deleteSession,
     generateTestQuestions,
     saveTest,
-    getStats
+    getStats,
+    getUserById
 }

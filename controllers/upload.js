@@ -19,10 +19,10 @@ const https = require('https')
  */
 const io = require('socket.io')(3001, {
     cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"]
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
     }
-  });
+});
 
 
 /** Object containing basic Firebase functions and properties.
@@ -138,7 +138,7 @@ const sanitizeData = data => {
 async function detectTextFromImage(filename) {
     let fileURL = `gs://${firebaseConfig.storageBucket}/processing/${filename}`;
     let [result] = await new vision.ImageAnnotatorClient().textDetection(fileURL);
-    await firebase.storage().refFromURL(fileURL).delete().then(_ => {});
+    await firebase.storage().refFromURL(fileURL).delete().then(_ => { });
     return sanitizeData(result.textAnnotations);
 }
 
@@ -162,7 +162,7 @@ async function detectTextFromImage(filename) {
  *  @returns {object} Transformed data object with detections received from Vision API.
  */
 async function detectTextFromPDF(filename) {
-    
+
     /* OCR client */
     const client = new vision.ImageAnnotatorClient();
 
@@ -203,7 +203,7 @@ async function detectTextFromPDF(filename) {
                         })
                     }
                 })
-                await firebase.storage().refFromURL(url).delete().then(_ => {});
+                await firebase.storage().refFromURL(url).delete().then(_ => { });
             });
         }
     }).catch(function (error) {
@@ -211,7 +211,7 @@ async function detectTextFromPDF(filename) {
     });
 
     /* A call to remove saved PDF file */
-    await firebase.storage().refFromURL(gcsSourceUri).delete().then(_ => {});
+    await firebase.storage().refFromURL(gcsSourceUri).delete().then(_ => { });
     return sanitizeData(data);
 }
 
@@ -222,7 +222,7 @@ async function detectTextFromPDF(filename) {
  *  @param {Buffer} buffer - Buffer containing data from the uploaded TXT file.
  *  @returns {object} Sanitized data object with words from the uploaded TXT file.
  */
- function detectTextFromTextFile(buffer) {
+function detectTextFromTextFile(buffer) {
     let contents = buffer.toString('utf8').replace(/\r?\n|\r/g, ' ').split(' ');
     let data = [];
     for (let word of contents)
@@ -261,7 +261,7 @@ async function translateWords(words) {
  */
 
 async function saveFileToBucket(filename, buffer) {
-    await firebase.storage().ref(`processing/${filename}`).put(buffer).then(_ => {});
+    await firebase.storage().ref(`processing/${filename}`).put(buffer).then(_ => { });
 }
 
 
@@ -273,11 +273,11 @@ async function saveFileToBucket(filename, buffer) {
  *  @param {Request} req - Request received from client.
  *  @param {Response} res - Response to be sent to client.
  */
-async function showUploadForm (req, res) {
+async function showUploadForm(req, res) {
     if (typeof req.session.uid == 'undefined') {
-        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
+        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!' });
     }
-    return res.render('upload.ejs', {session: req.session});
+    return res.render('upload.ejs', { session: req.session });
 }
 
 
@@ -295,11 +295,11 @@ async function showUploadForm (req, res) {
  *  @param {Request} req - Request received from client.
  *  @param {Response} res - Response to be sent to client.
  */
-async function handleUploadForm (req, res) {
+async function handleUploadForm(req, res) {
 
     const uid = req.session.uid
     if (typeof uid == 'undefined') {
-        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
+        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!' });
     }
 
     /* Data object with results to be sent to client */
@@ -307,7 +307,7 @@ async function handleUploadForm (req, res) {
 
     /* Array for error messages in the form of strings to be sent to client */
     let errors = [];
-    
+
     /* Main loop to iterate over all submitted files */
     for (let file of req.files) {
 
@@ -322,13 +322,13 @@ async function handleUploadForm (req, res) {
         }
 
         let extension = filetypes[mimetype].extension;
-        
+
         /* Check if given file is a TXT one. If it is not, it should be saved to the Firestore */
         if (extension !== 'txt') {
 
             /* Generate new name for a file to reduce risk of overwritting someone's data */
             let filename = `${nanoid(32)}.${extension}`;
-            
+
             /* Save file to the Firestore using it's new name */
             await saveFileToBucket(filename, file.buffer);
 
@@ -348,7 +348,7 @@ async function handleUploadForm (req, res) {
         singleData = await translateWords(singleData);
 
         /* Emit a message to be displayed on the client and save all the words to database */
-        io.emit(uid, { msg: 'Zapisywanie słów...'});
+        io.emit(uid, { msg: 'Zapisywanie słów...' });
         await database.saveWords(uid, singleData);
 
         /* Append words from current file to words from previous files */
@@ -356,7 +356,7 @@ async function handleUploadForm (req, res) {
     }
 
     /* Render a summary page with a list of all detected, processed and translated words */
-    return res.render('wordList.ejs', { words: data, errors: errors, session: req.session});
+    return res.render('wordList.ejs', { words: data, errors: errors, session: req.session });
 }
 
 
@@ -374,11 +374,11 @@ async function handleUploadForm (req, res) {
  *  @param {Request} req - Request received from client.
  *  @param {Response} res - Response to be sent to client.
  */
-async function handleURLForm (req, res) {
-    
+async function handleURLForm(req, res) {
+
     const uid = req.session.uid;
     if (typeof uid == 'undefined') {
-        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!'});
+        return res.render('index.ejs', { session: req.session, error: 'Nie możesz dodać słów bez zalogowania!' });
     }
 
     /* Generate new name for a file to reduce risk of overwritting someone's data */
@@ -388,7 +388,7 @@ async function handleURLForm (req, res) {
 
     /* Emit a message to be displayed on the client */
     io.emit(uid, { msg: `Analizowanie adresu: ${html.url}` });
-    
+
     /* Data object with results to be sent to client */
     let data;
 
@@ -407,19 +407,19 @@ async function handleURLForm (req, res) {
         singleData = await translateWords(singleData);
 
         /* Emit a message to be displayed on the client and save all the words to database */
-        io.emit(uid, { msg: 'Zapisywanie słów...'});
+        io.emit(uid, { msg: 'Zapisywanie słów...' });
         await database.saveWords(uid, singleData);
-        
+
         /* Append words from current file to words from previous files */
         data = { ...data, ...singleData };
     })
 
     /* Render a summary page with a list of all detected, processed and translated words */
-    return res.render('wordList.ejs', { words: data, session: req.session});
+    return res.render('wordList.ejs', { words: data, session: req.session });
 }
 
 /* Functions and variables to be used in upload API controller */
-module.exports = { 
+module.exports = {
     filetypes,
     htmlToPDF,
     getURLContents,

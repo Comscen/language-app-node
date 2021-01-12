@@ -15,7 +15,7 @@ const { nanoid } = require('nanoid');
  *  @param {Request} req - Request received from client.
  *  @param {Response} res - Response to be sent to client.
  */
-exports.getOwnProfile = async (req, res) => {
+exports.showOwnProfile = async (req, res) => {
     if (typeof req.session.idToken == 'undefined') {
         return res.render('index.ejs', { error: 'Aby wejść na profil należy się zalogować!', session: req.session });
     }
@@ -35,22 +35,22 @@ exports.getOwnProfile = async (req, res) => {
  */
 exports.handlePhotoUpload = async (req, res) => {
     if (typeof req.session.idToken == 'undefined') {
-        return res.render('index.ejs', { session: req.session, error: 'Nie można zmienić zdjęcia profilowego bez zalogowania!'});
+        return res.render('index.ejs', { session: req.session, error: 'Nie można zmienić zdjęcia profilowego bez zalogowania!' });
     }
 
     /* Check if submitted file is an png or jpeg image, if not, display an error message. */
     let file = req.file;
     if (file.mimetype !== 'image/png' && file.mimetype !== 'image/jpeg') {
-        return res.render('index.ejs', { session: req.session, error: `Nieprawidłowy format pliku: ${file.originalName}`});
+        return res.render('index.ejs', { session: req.session, error: `Nieprawidłowy format pliku: ${file.originalName}` });
     }
 
     /* Save uploaded file to Firestore with a new name */
     let ref = firebase.storage().ref(`avatars/${req.session.uid}/${nanoid(32)}.png`);
-    await ref.put(file.buffer).then(_ => {});
-    
+    await ref.put(file.buffer).then(_ => { });
+
     /* Set saved file's download link as user's profile picture URL and render his profile page */
     let newURL = await ref.getDownloadURL();
-    await firebase.auth().currentUser.updateProfile({photoURL: newURL}).then(_ => {
+    await firebase.auth().currentUser.updateProfile({ photoURL: newURL }).then(_ => {
         req.session.photoURL = newURL;
         return res.redirect('/profile');
     });
