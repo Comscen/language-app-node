@@ -8,18 +8,13 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 const session = require('express-session');
-// const MongoStore = require('connect-mongo')(session)
 
 app.use(session({
     secret: process.env.SESSION_SECRET, 
     resave: false, 
     saveUninitialized: false,
     cookie: { maxAge: 60 * 60 * 1000 }
-    // store: new MongoStore({
-    //     mongooseConnection: mongodb.getConnection(),
-    //     clear_interval: 3600
-    // })
-}))
+}));
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(bodyParser.json());
@@ -30,8 +25,10 @@ app.set('view engine', 'ejs');
 /* API Routing */
 
 const uploadAPIRoutes = require('./routes/upload-api');
+const testsAPIRoutes = require('./routes/tests-api');
 
 app.use("/api/upload", uploadAPIRoutes);
+app.use("/api/tests", testsAPIRoutes);
 
 /* !API Routing */
 

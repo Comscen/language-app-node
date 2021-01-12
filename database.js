@@ -122,7 +122,7 @@ async function signUpWithEmailAndPassword(email, password) {
 }
 
 async function updateWord(uid, text, metadata) {
-    (await getWordByTextReference(uid, text)).update(metadata)
+    (await getWordByTextReference(uid, text)).update(metadata).catch(error => console.log(`ERROR WHILE UPDATING WORD "${text}": ${error}`))
 }
 
 async function updateWords(uid, metadata) {
