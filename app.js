@@ -9,9 +9,10 @@ var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 const session = require('express-session');
 
+/* Session configuration */
 app.use(session({
-    secret: process.env.SESSION_SECRET, 
-    resave: false, 
+    secret: process.env.SESSION_SECRET,
+    resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 60 * 60 * 1000 }
 }));
@@ -26,9 +27,13 @@ app.set('view engine', 'ejs');
 
 const uploadAPIRoutes = require('./routes/upload-api');
 const testsAPIRoutes = require('./routes/tests-api');
+const profileAPIRoutes = require('./routes/profile-api');
+const authAPIRoutes = require('./routes/auth-api');
 
 app.use("/api/upload", uploadAPIRoutes);
 app.use("/api/tests", testsAPIRoutes);
+app.use("/api/profile", profileAPIRoutes);
+app.use("/api/auth", authAPIRoutes);
 
 /* !API Routing */
 
@@ -46,16 +51,18 @@ app.use("/upload", uploadRoutes);
 app.use("/profile", profileRoutes);
 app.use("/auth", authRoutes);
 
-app.get("/", (req, res) => res.render('index.ejs', {session: req.session}));
-app.get("/license", (req, res) => res.render('license.ejs', {session: req.session}));
-app.get("*", (req, res) => res.render('notfound.ejs', {session: req.session}));
+app.get("/", (req, res) => res.render('index.ejs', { session: req.session }));
+app.get("/license", (req, res) => res.render('license.ejs', { session: req.session }));
+app.get("*", (req, res) => res.render('notfound.ejs', { session: req.session }));
 
 /* !App Routing */
 
+/* Port configuration */
 app.listen(process.env.PORT || 3000, function () {
     console.log(`Application started on PORT: ${process.env.PORT || 3000}`);
 });
 
+/* Handle interrupt to close the application */
 process.on('SIGINT', function () {
     console.log("Application shutting down...");
     process.exit();
