@@ -187,7 +187,7 @@ exports.handleRegisterForm = async (req, res) => {
                     return res.render('index.ejs', { message: 'Pomyślnie zarejestrowano! Zostałeś automatycznie zalogowany.', session: req.session });
                 })
             }).catch(error => {
-                console.log(`TOKEN ERRROR (REGISTER) ${error}`);
+                console.log(`TOKEN ERROR (REGISTER) ${error}`);
             })
         }).catch(error => {
             console.log(`FIRESTORE ERROR: ${error}`);
