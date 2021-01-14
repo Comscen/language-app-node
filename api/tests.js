@@ -33,7 +33,7 @@ exports.getNewTest = async (req, res) => {
     /* Generate test or return an error if specified ID is invalid. */
     let testData = await generateTestQuestions(uid, amount).catch(error => {
         status = 404;
-        errors.push('Could not generate test. User with given UID does not exits');
+        errors.push('Could not generate test. User with given UID does not exist.');
     });;
 
     /* If user does not have enough seen and not learnt words to generate a test - an error is sent */
@@ -41,7 +41,7 @@ exports.getNewTest = async (req, res) => {
         return res.status(409).send({ error: 'This user does not have enough words ready for test generation.' });
     }
 
-    return res.status(status).send({ testData: testData });
+    return res.status(status).send({ testData: testData, errors: errors });
 }
 
 /** Handles '/tests' (API) POST request to save a test taken by user.
