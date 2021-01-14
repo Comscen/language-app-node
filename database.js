@@ -87,13 +87,13 @@ async function generateTestQuestions(uid, amount = 24) {
     return error ? null : questionData;
 }
 
-async function generateWordsForLearning(uid) {
-    let wordsData = {}
-    let indexes
-    let error = false
+async function generateWordsForLearning(uid, amount=20) {
+    let wordsData = {};
+    let indexes = [];
+    let error = false;
     await getAllNonLearntWordsReference(uid).then(async words => {
         await words.where('appeared', '==', false).get().then(documents => {
-            if (documents.size < 15) {
+            if (documents.size < 20) {
                 error = true;
                 return;
             }
@@ -101,9 +101,9 @@ async function generateWordsForLearning(uid) {
                 let random = getRandomInt(1, documents.size)
                 if (!indexes.includes(random)) {
                     indexes.push(random);
-                    wordData[documents.docs[random].id] = documents.docs[random].data()['translation']
+                    wordsData[documents.docs[random].id] = documents.docs[random].data()['translation'];
                 }
-            } while (indexes.length < 24);
+            } while (indexes.length < amount);
         }).catch(error => {
             console.log(error)
         })
@@ -125,14 +125,10 @@ async function updateWord(uid, text, metadata) {
     (await getWordByTextReference(uid, text)).update(metadata).catch(error => console.log(`ERROR WHILE UPDATING WORD "${text}": ${error}`))
 }
 
-async function updateWords(uid, metadata) {
-    Object.keys(metadata).forEach(async object => {
-        let updateData = {}
-        Object.keys(metadata[object]).forEach(key => {
-            updateData[key] = metadata[object][key]
-        })
-        await updateWord(uid, object, updateData)
-    })
+async function updateWords(uid, wordArray) {
+    for(let word of wordArray){
+        await updateWord(uid, word, {appeared: true})
+    }
 }
 
 async function getWordAmount(uid) {
@@ -218,6 +214,7 @@ module.exports = {
     getWordAmount,
     getWordByText: getWordByTextReference,
     updateWord,
+    updateWords,
     saveWords,
     getAllLearntWords: getAllLearntWordsReference,
     getAllNonLearntWords:
@@ -229,6 +226,7 @@ module.exports = {
     signUpWithEmailAndPassword,
     deleteSession,
     generateTestQuestions,
+    generateWordsForLearning,
     saveTest,
     getStats,
     getUserById
