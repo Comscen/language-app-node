@@ -100,6 +100,15 @@ exports.handleOAuthLogin = async (req, res) => {
         console.log(`Error while saving data from OAuth login: ${error}`);
     })
 
+    await firebaseService.firebase.auth().signInWithCustomToken(idToken).then(() => {
+
+    }).catch(failure => {
+        console.log(failure);
+    });
+
+    await firebaseService.firebase
+
+
     /* Check if user has ever signed in with this e-mail address before to decide if
     *  wordAmount field should be created in database
     */
@@ -230,6 +239,8 @@ exports.logout = async (req, res) => {
         req.session.name = undefined;
         req.session.photoURL = undefined;
         req.session.oauth = undefined;
+        delete req.session.wordData;
+        delete req.session.testData;
         return res.render('index.ejs', { message: 'Pomyślnie wylogowano.', session: req.session });
     });
 
