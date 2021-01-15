@@ -29,11 +29,13 @@ const uploadAPIRoutes = require('./routes/upload-api');
 const testsAPIRoutes = require('./routes/tests-api');
 const profileAPIRoutes = require('./routes/profile-api');
 const authAPIRoutes = require('./routes/auth-api');
+const learningAPIRoutes = require('./routes/learning-api')
 
 app.use("/api/upload", uploadAPIRoutes);
 app.use("/api/tests", testsAPIRoutes);
 app.use("/api/profile", profileAPIRoutes);
 app.use("/api/auth", authAPIRoutes);
+app.use("/api/learning", learningAPIRoutes)
 
 /* !API Routing */
 
