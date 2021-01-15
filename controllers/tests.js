@@ -65,7 +65,7 @@ exports.showNewTest = async (req, res) => {
 exports.saveTest = async (req, res) => {
 
     const uid = req.session.uid;
-    if (typeof idToken == 'undefined') {
+    if (typeof uid == 'undefined') {
         return res.render('index.ejs', { session: req.session, error: 'Nie możesz zapisać testu bez zalogowania!' });
     }
 
