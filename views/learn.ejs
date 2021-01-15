@@ -28,139 +28,143 @@
         <div class="row">
             <div class="col-xl-3"></div>
             <div class="col">
-                <div class="carousel slide" data-ride="carousel" data-interval="0" id="carousel-1">
-                    <% 
-                        var i = 0;
-                        const wordData = session.wordData;
-                        var words = Object.keys(wordData);
-                    %>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active" style="text-align: center;">
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Słowo</th>
-                                                    <th>Tłumaczenie</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for (; i< words.length / 4; i++) { %>
+                <% if (typeof session.wordData != 'undefined') { %>
+                    <div class="carousel slide" data-ride="carousel" data-interval="0" id="carousel-1">
+                        <% 
+                            var i = 0;
+                            const wordData = session.wordData;
+                            var words = Object.keys(wordData);
+                        %>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active" style="text-align: center;">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
                                                     <tr>
-                                                        <td><%= words[i] %></td>
-                                                        <td><%= wordData[words[i]] %></td>
+                                                        <th>Słowo</th>
+                                                        <th>Tłumaczenie</th>
                                                     </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    <% for (; i< words.length / 4; i++) { %>
+                                                        <tr>
+                                                            <td><%= words[i] %></td>
+                                                            <td><%= wordData[words[i]] %></td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
+                                    <div class="col"></div>
                                 </div>
-                                <div class="col"></div>
+                            </div>
+                            <div class="carousel-item" style="text-align: center;">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Słowo</th>
+                                                        <th>Tłumaczenie</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for (; i< words.length / 2; i++) { %>
+                                                        <tr>
+                                                            <td><%= words[i] %></td>
+                                                            <td><%= wordData[words[i]] %></td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </div>
+                            <div class="carousel-item" style="text-align: center;">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Słowo</th>
+                                                        <th>Tłumaczenie</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for (; i< words.length - words.length/4; i++) { %>
+                                                        <tr>
+                                                            <td><%= words[i] %></td>
+                                                            <td><%= wordData[words[i]] %></td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </div>
+                            <div class="carousel-item" style="text-align: center;">
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Słowo</th>
+                                                        <th>Tłumaczenie</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% for (; i< words.length; i++) { %>
+                                                        <tr>
+                                                            <td><%= words[i] %></td>
+                                                            <td><%= wordData[words[i]] %></td>
+                                                        </tr>
+                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="carousel-item" style="text-align: center;">
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Słowo</th>
-                                                    <th>Tłumaczenie</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for (; i< words.length / 2; i++) { %>
-                                                    <tr>
-                                                        <td><%= words[i] %></td>
-                                                        <td><%= wordData[words[i]] %></td>
-                                                    </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div>
-                        </div>
-                        <div class="carousel-item" style="text-align: center;">
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Słowo</th>
-                                                    <th>Tłumaczenie</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for (; i< words.length - words.length/4; i++) { %>
-                                                    <tr>
-                                                        <td><%= words[i] %></td>
-                                                        <td><%= wordData[words[i]] %></td>
-                                                    </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div>
-                        </div>
-                        <div class="carousel-item" style="text-align: center;">
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Słowo</th>
-                                                    <th>Tłumaczenie</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% for (; i< words.length; i++) { %>
-                                                    <tr>
-                                                        <td><%= words[i] %></td>
-                                                        <td><%= wordData[words[i]] %></td>
-                                                    </tr>
-                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col"></div>
-                            </div>
-                        </div>
+                        <div><a class="carousel-control-prev" href="#carousel-1" role="button" data-slide="prev" style="background: transparent;"><span class="carousel-control-prev-icon text-center" style="width: 40px;height: 40px;border-radius: 50%;background: var(--cyan);"><i class="icon ion-arrow-left-b" style="margin-top: 11px;font-size: 26px;margin-right: 5px;"></i></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#carousel-1" role="button" data-slide="next" style="background: transparent;"><span class="carousel-control-prev-icon text-center" style="width: 40px;height: 40px;border-radius: 50%;background: var(--cyan);"><i class="icon ion-arrow-right-b" style="margin-top: 11px;font-size: 26px;margin-right: -4px;"></i></span><span class="sr-only">Next</span></a></div>
+                        <ol class="carousel-indicators">
+                            <li data-target="#carousel-1" data-slide-to="0" class="active"></li>
+                            <li data-target="#carousel-1" data-slide-to="1"></li>
+                            <li data-target="#carousel-1" data-slide-to="2"></li>
+                            <li data-target="#carousel-1" data-slide-to="3"></li>
+                        </ol>
                     </div>
-                    <div><a class="carousel-control-prev" href="#carousel-1" role="button" data-slide="prev" style="background: transparent;"><span class="carousel-control-prev-icon text-center" style="width: 40px;height: 40px;border-radius: 50%;background: var(--cyan);"><i class="icon ion-arrow-left-b" style="margin-top: 11px;font-size: 26px;margin-right: 5px;"></i></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#carousel-1" role="button" data-slide="next" style="background: transparent;"><span class="carousel-control-prev-icon text-center" style="width: 40px;height: 40px;border-radius: 50%;background: var(--cyan);"><i class="icon ion-arrow-right-b" style="margin-top: 11px;font-size: 26px;margin-right: -4px;"></i></span><span class="sr-only">Next</span></a></div>
-                    <ol class="carousel-indicators">
-                        <li data-target="#carousel-1" data-slide-to="0" class="active"></li>
-                        <li data-target="#carousel-1" data-slide-to="1"></li>
-                        <li data-target="#carousel-1" data-slide-to="2"></li>
-                        <li data-target="#carousel-1" data-slide-to="3"></li>
-                    </ol>
-                </div>
+                <% } %>
             </div>
             <div class="col-xl-3"></div>
         </div>
-        <div class="row" style="margin-top: 20px;">
-            <div class="col-xl-5 align-self-center"></div>
-            <div class="col align-self-center" style="text-align: center;">
-                <form id='learn-form' method="POST">
-                    <input type="hidden" name="wordData" value="<%= wordData %>">
-                    <button class="btn" type="submit" style="background: #56c6c6;width: 100%;color: rgb(255,255,255);text-align: center;">Zakończ naukę</button>
-                </form>
+        <% if (typeof session.wordData != 'undefined') { %>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-xl-5 align-self-center"></div>
+                <div class="col align-self-center" style="text-align: center;">
+                    <form id='learn-form' method="POST">
+                        <input type="hidden" name="wordData" value="<%= wordData %>">
+                        <button class="btn" type="submit" style="background: #56c6c6;width: 100%;color: rgb(255,255,255);text-align: center;">Zakończ naukę</button>
+                    </form>
+                </div>
+                <div class="col-xl-5"></div>
             </div>
-            <div class="col-xl-5"></div>
-        </div>
+        <% } %>
     </div>
 
     <%- include("./partials/footer.ejs") %>
