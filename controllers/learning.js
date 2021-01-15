@@ -58,7 +58,7 @@ exports.handleLearningForm = async (req, res) => {
     // Generate a new set of words to be shown instantly after one has been learnt.
     const words = await generateWordsForLearning(req.session.uid, amount);
 
-    if(Object.keys(words).length < amount) {
+    if(words === undefined) {
         return res.render('index.ejs', { session: req.session, message: 'Pomyślnie zapamiętano słowa!', error: 'Masz za mało słów w bazie, aby wygenerować kolejny zestaw do nauki!' });
     }
 
