@@ -59,6 +59,7 @@ exports.handleLearningForm = async (req, res) => {
     const words = await generateWordsForLearning(req.session.uid, amount);
 
     if(words === undefined) {
+        req.session.wordData = undefined;
         return res.render('index.ejs', { session: req.session, message: 'Pomyślnie zapamiętano słowa!', error: 'Masz za mało słów w bazie, aby wygenerować kolejny zestaw do nauki!' });
     }
 
