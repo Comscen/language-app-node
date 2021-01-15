@@ -42,13 +42,12 @@ exports.showNewTest = async (req, res) => {
     let testData = await firebaseService.generateTestQuestions(req.session.uid, 24);
 
     /* If user does not have enough seen and not learnt words to generate a test - an error is displayed */
-    if (testData === null) {
+    if (testData === undefined) {
         return res.render('test.ejs', { error: 'Brak wystarczającej ilości nowych przerobionych słówek. Przejdź do seksji "Nauka" i naucz się nowych słówek, aby wygenerować test.', session: req.session })
     }
 
     /* Selected words are saved to session for when test is saved*/
     req.session.testData = testData;
-
     /* Render a test page */
     return res.render('test.ejs', { session: req.session });
 }
@@ -91,10 +90,11 @@ exports.saveTest = async (req, res) => {
      * @property {number} points - Amount of points gained by user
      * @property {number} maxPoints - Total points to be gained (equal to the number of words in a test)
      */
+
     let results = {
         words: {},
-        dateStarted: parseDate(testData.dateCreated),
-        dateFinished: parseDate(finishDate.toISOString()),
+        dateStarted: testData.dateCreated,
+        dateFinished: finishDate.toISOString(),
         points: 0,
         maxPoints: answers.length
     };
@@ -147,6 +147,8 @@ exports.saveTest = async (req, res) => {
     /* Save a test and it's results to database */
     await firebaseService.saveTest(uid, results)
 
+    results.dateStarted = this.parseDate(results.dateStarted);
+    results.dateFinished = this.parseDate(results.dateFinished);
     /* Render summary page with total points, date of start and finish and a list of words that were in a test with their 
      * and user's answers (it also shows which guesses were correct and which were not).
      */

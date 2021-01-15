@@ -19,8 +19,9 @@ exports.showLearningForm = async (req, res) => {
     }
 
     // Generate words for learning. If their length is too short, render an error.
-    let wordData = await generateWordsForLearning(req.session.uid);
-    if(Object.keys(wordData).length < 24){
+    const amount = 24;
+    let wordData = await generateWordsForLearning(req.session.uid, amount);
+    if(wordData === undefined){
         return res.render('learn.ejs', {session: req.session, error:'Masz za mało słów w bazie, aby wygenerować kolejny zestaw do nauki!'})
     }
 
@@ -48,18 +49,20 @@ exports.handleLearningForm = async (req, res) => {
     // Gets data about appeared words from session.
     let wordData = req.session.wordData
 
-    // Gets individual words from the object.
-    let words = Object.keys(wordData)
-
     // Iterates through all the words and updates their appeared field to true, as to mark them that they have been
     // shown in a learning course. This is needed for the tests.
-    for (let word of words){
+    for (let word of Object.keys(wordData)){
         await updateWord(req.session.uid, word, {appeared: true});
     }
-
+    const amount = 24;
     // Generate a new set of words to be shown instantly after one has been learnt.
-    req.session.wordData = await generateWordsForLearning(req.session.uid)
+    const words = await generateWordsForLearning(req.session.uid, amount);
 
+    if(Object.keys(words).length < amount) {
+        return res.render('index.ejs', { session: req.session, message: 'Pomyślnie zapamiętano słowa!', error: 'Masz za mało słów w bazie, aby wygenerować kolejny zestaw do nauki!' });
+    }
+
+    req.session.wordData = words;
     // Render the site with appropriate information.
     return res.render('learn.ejs', {session:req.session, message: 'Pomyślnie zapamiętano słowa! Automatycznie wygenerowaliśmy nowy zestaw, jednak jeśli chcesz, możesz po prostu opuścić tę stronę.'})
 }

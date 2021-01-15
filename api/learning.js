@@ -33,7 +33,7 @@ exports.getNewSetOfWordsForLearning = async (req, res) => {
     })
 
     // Checks if a user has enough non-appeared words in his collection to generate a test. If not, returns an error. 
-    if (wordData === null)
+    if (wordData === undefined)
         return res.status(409).send({ error: 'This user does not have enough non learnt words ready for a word set generation' });
 
     // Returns a response with appropriate status and information.
@@ -63,20 +63,18 @@ exports.saveSetOfWordsAsAppearedInLearning = async (req, res) => {
 
     // Iterates through all the words and checks whether if they exist. If not, pushes an error back, specifying,
     // which of the words are not present in the database.
-    for (let word of words) {
-        await checkIfWordExists(uid, word).then(result => {
-            if (!result){
+    for (let word of Object.keys(words)) {
+            if (!checkIfWordExists(uid, word)) {
                 status = 409;
                 errors.push(`${word} cannot be set as appearead, because it does not exist.`);
             }
-        })
     }
 
     // Checks if there are any errors. If not, updates the appeared field of provided words to true. 
-    if(errors.length == 0){
+    if (errors.length == 0) {
         await updateWords(uid, words);
     }
 
     // Returns a response with appropriate status and information.
-    return res.status(status).send({errors: errors});
+    return res.status(status).send({ errors: errors });
 }

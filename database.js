@@ -139,9 +139,8 @@ async function generateTestQuestions(uid, amount = 24) {
 
         // From the query above, it further nests the query to only load the words where appeared field is true.
         await words.where('appeared', '==', true).get().then(documents => {
-
             /**
-             * If query result size is smaller than the amount of questions to be generated for a test it sets error to true
+             * If query result size is smaller than xdthe amount of questions to be generated for a test it sets error to true
              * and function ends. 
              * Otherwise it generates a random number and gets a document with given, randomly generated id
              * and saves it to an object as a key-value field. The preceding operation is repeated until
@@ -152,30 +151,31 @@ async function generateTestQuestions(uid, amount = 24) {
                 error = true;
                 return;
             }
-            do {
-                let random = getRandomInt(1, documents.size)
+            while (indexes.length < amount) {
+                let random = getRandomInt(0, documents.size);
                 if (!indexes.includes(random)) {
                     indexes.push(random);
                     questionData[documents.docs[random].id] = documents.docs[random].data()['translation']
                 }
-            } while (indexes.length < amount);
+            }
             questionData['dateCreated'] = new Date();
+
         }).catch(error => {
-            console.log(error)
+            console.log(error);
         })
     }).catch(error => {
-        console.log(error)
+        console.log(error);
     })
-    return error ? null : questionData;
+    return error ? undefined : questionData;
 }
 
 /**
  * @author Czajkowski Sebastian
- * @param {*} uid - User's id.
- * @param {*} amount - Amount of words to be loaded from the database.
+ * @param {string} uid - User's id.
+ * @param {number} amount - Amount of words to be loaded from the database.
  * @returns {string|object} Returns an error if it is set to true, or word data, if error is false. 
  */
-async function generateWordsForLearning(uid, amount=20) {
+async function generateWordsForLearning(uid, amount = 24) {
     let wordsData = {};
     let indexes = [];
     let error = false;
@@ -193,12 +193,12 @@ async function generateWordsForLearning(uid, amount=20) {
              * and saves it to an object as a key-value field. The preceding operation is repeated until
              * the amount of words is exactly as given in the function parameter. A
              */
-            if (documents.size < 20) {
+            if (documents.size < amount) {
                 error = true;
                 return;
             }
             do {
-                let random = getRandomInt(1, documents.size)
+                let random = getRandomInt(0, documents.size);
                 if (!indexes.includes(random)) {
                     indexes.push(random);
                     wordsData[documents.docs[random].id] = documents.docs[random].data()['translation'];
@@ -210,7 +210,7 @@ async function generateWordsForLearning(uid, amount=20) {
     }).catch(error => {
         console.log(error)
     })
-    return !error ? wordsData : error;
+    return error ? undefined : wordsData;
 }
 
 /**
@@ -250,20 +250,20 @@ async function updateWord(uid, text, metadata) {
     (await getWordByTextReference(uid, text)).update(metadata).catch(error => console.log(`ERROR WHILE UPDATING WORD "${text}": ${error}`))
 }
 
-/**
+ /**
  * Iterates through the array and calls updateWord() method to update an array of words.
  * 
  * IMPORTANT: Currently only used in the learning module, so the metadata is preset.
  * 
  * @author Czajkowski Sebastian
  * @param {string} uid - User's id.
- * @param {array} wordArray - Array of word ids.
+ * @param {object} words - Object with keys being word ids.
  */
-async function updateWords(uid, wordArray) {
-    for(let word of wordArray){
+async function updateWords(uid, words) {
+    for(let word of Object.keys(words)){
         await updateWord(uid, word, {appeared: true})
     }
-}
+} 
 
 /**
  * Gets the word amount of given user.
@@ -294,7 +294,7 @@ async function updateWordAmount(uid, amount) {
  * @returns {boolean} True if the word exist.
  */
 async function checkIfWordExists(uid, text) {
-    return await firebase.firestore().doc(`users/${uid}/words/${text}`).get().exists
+    return await firebase.firestore().doc(`users/${uid}/words/${text}`).get().exists;
 }
 
 /**
