@@ -2,3 +2,5 @@
 node_modules
 dev.json
 out
+app.yaml
+.gcloudignore
