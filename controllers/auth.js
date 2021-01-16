@@ -100,14 +100,13 @@ exports.handleOAuthLogin = async (req, res) => {
         console.log(`Error while saving data from OAuth login: ${error}`);
     })
 
-    await firebaseService.firebase.auth().signInWithCustomToken(idToken).then(() => {
-
-    }).catch(failure => {
-        console.log(failure);
-    });
-
-    await firebaseService.firebase
-
+    await firebaseService.admin.auth().createCustomToken(req.session.uid).then(async customToken => {
+        await firebaseService.firebase.auth().signInWithCustomToken(customToken).then(credential => {
+            
+        }).catch(failure => {
+            console.log(failure)
+        });
+    })
 
     /* Check if user has ever signed in with this e-mail address before to decide if
     *  wordAmount field should be created in database
