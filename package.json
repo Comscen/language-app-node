@@ -4,6 +4,7 @@
   "description": "ARC Project",
   "main": "app.js",
   "scripts": {
+    "deploy": "gcloud app deploy",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
