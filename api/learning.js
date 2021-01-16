@@ -64,7 +64,8 @@ exports.saveSetOfWordsAsAppearedInLearning = async (req, res) => {
     // Iterates through all the words and checks whether if they exist. If not, pushes an error back, specifying,
     // which of the words are not present in the database.
     for (let word of Object.keys(words)) {
-            if (!checkIfWordExists(uid, word)) {
+        const exists = await checkIfWordExists(uid, word);
+            if (!exists) {
                 status = 409;
                 errors.push(`${word} cannot be set as appearead, because it does not exist.`);
             }

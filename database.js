@@ -57,7 +57,7 @@ async function saveWords(uid, words) {
 
             // Checks whether if given word exists in user's collection.
             await checkIfWordExists(uid, key).then(async (exists) => {
-
+                
                 // If the word does not exist, word amount is incremented and the object is saved.
                 if (!exists) {
                     wordAmount++;
@@ -285,16 +285,22 @@ async function getWordAmount(uid) {
 async function updateWordAmount(uid, amount) {
     await firebase.firestore().doc(`users/${uid}`).set({ wordAmount: amount });
 }
+
 /**
  * Checks if a given word exists in the user's collection.
  * 
+ * @async
  * @author Czajkowski Sebastian
  * @param {string} uid - User's id
  * @param {string} text - Word id
  * @returns {boolean} True if the word exist.
  */
 async function checkIfWordExists(uid, text) {
-    return await firebase.firestore().doc(`users/${uid}/words/${text}`).get().exists;
+    let exists = false;
+    await firebase.firestore().collection(`users/${uid}/words/`).doc(`${text}`).get().then(doc => {
+        exists = doc.exists;
+    });
+    return exists;
 }
 
 /**
