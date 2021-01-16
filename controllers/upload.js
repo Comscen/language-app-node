@@ -17,9 +17,9 @@ const https = require('https')
  *  @type {object}
  *  @requires module:socket.io
  */
-const io = require('socket.io')(3001, {
+const io = require('socket.io')(8081, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://projekt-arc.ew.r.appspot.com/",
         methods: ["GET", "POST"]
     }
 });

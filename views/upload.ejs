@@ -37,7 +37,7 @@
         document.getElementById('loader').style.removeProperty('display');
     }
 
-    const socket = io('http://localhost:3001');
+    const socket = io('https://projekt-arc.ew.r.appspot.com:8081');
     socket.on('<%= session.uid %>', function(data) {
         document.getElementById('loaderMessage').innerText = data.msg;
     });
