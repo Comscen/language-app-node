@@ -10,7 +10,7 @@ var router = express.Router()
 var learningAPIController = require('../api/learning')
 
 /* Return an object with words for learning */
-router.get("/", learningAPIController.getNewSetOfWordsForLearning)
+router.get("/:uid/:amount", learningAPIController.getNewSetOfWordsForLearning)
 
 /* Update words as appeared in the database */
 router.post("/", learningAPIController.saveSetOfWordsAsAppearedInLearning)

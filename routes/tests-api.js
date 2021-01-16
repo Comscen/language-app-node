@@ -10,7 +10,7 @@ var router = express.Router()
 var testsAPIController = require('../api/tests')
 
 /* Generate and send a test */
-router.get("/", testsAPIController.getNewTest);
+router.get("/:uid/:amount", testsAPIController.getNewTest);
 
 /* Handle taken test's data to be validated and saved to database.
  * As a response, results of said test are sent.

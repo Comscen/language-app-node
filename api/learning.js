@@ -15,10 +15,10 @@ const { generateWordsForLearning, updateWords, checkIfWordExists } = require('..
  * @param {Response} res - Response to be sent to the client. 
  */
 exports.getNewSetOfWordsForLearning = async (req, res) => {
-    const uid = req.body.uid;
+    const uid = req.params.uid;
 
     // Checks if the amount of words to be sent is provided. If not use the default value of 24.
-    const amount = req.body.amount == 'undefined' ? 24 : req.body.amount;
+    const amount = req.params.amount == 'undefined' ? 24 : req.params.amount;
     let errors = [];
 
     // Checks whether if the UID has been specified.

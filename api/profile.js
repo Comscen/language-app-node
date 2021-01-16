@@ -18,7 +18,7 @@ const { nanoid } = require('nanoid');
  */
 exports.getOwnProfile = async (req, res) => {
     
-    const uid = req.body.uid;
+    const uid = req.params.uid;
     if (typeof uid == 'undefined') {
         return res.status(400).send({ error: 'UID not specified' });
     }

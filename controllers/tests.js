@@ -43,7 +43,7 @@ exports.showNewTest = async (req, res) => {
 
     /* If user does not have enough seen and not learnt words to generate a test - an error is displayed */
     if (testData === undefined) {
-        return res.render('test.ejs', { error: 'Brak wystarczającej ilości nowych przerobionych słówek. Przejdź do seksji "Nauka" i naucz się nowych słówek, aby wygenerować test.', session: req.session })
+        return res.render('test.ejs', { error: 'Brak wystarczającej ilości nowych przerobionych słówek (minimum 24). Przejdź do seksji "Nauka" i naucz się nowych słówek, aby wygenerować test.', session: req.session })
     }
 
     /* Selected words are saved to session for when test is saved*/

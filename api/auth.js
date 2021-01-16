@@ -17,8 +17,8 @@ const firebaseService = require('../database')
  */
 exports.getUIDByEmail = async (req, res) => {
     
-    const email = req.body.email;
-    const password = req.body.password;
+    const email = req.params.email;
+    const password = req.params.password;
 
     if (typeof email == 'undefined' || typeof password == 'undefined') {
         return res.status(406).send({ error: 'Both e-mail address and password are required.'})

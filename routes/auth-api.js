@@ -10,7 +10,7 @@ var router = express.Router()
 var authAPIController = require('../api/auth')
 
 /* Return an UID and user info using user's e-mail address and password */
-router.post("/login", authAPIController.getUIDByEmail)
+router.post("/login/:uid/:password", authAPIController.getUIDByEmail)
 
 /* Return an UID and user info using user's idToken (register an account if necessary) */
 router.post("/login/oauth", authAPIController.getUIDByToken)

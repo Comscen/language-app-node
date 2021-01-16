@@ -20,10 +20,10 @@ const firebaseService = require('../database')
  *  @param {Response} res - Response to be sent to client.
  */
 exports.getNewTest = async (req, res) => {
-    const uid = req.body.uid;
+    const uid = req.params.uid;
 
     /* Check if amount of words to select has been specified. If not, use the default value of 24 per test */
-    const amount = typeof req.body.amount == 'undefined' ? 24 : req.body.amount;
+    const amount = typeof req.params.amount == 'undefined' ? 24 : req.params.amount;
     let errors = [];
 
     let status = 200;

@@ -12,6 +12,6 @@ const upload = multer({ storage: multer.memoryStorage() })
 var profileAPIController = require('../api/profile')
 
 /* Retrieves user's information and basic statistics */
-router.get("/", profileAPIController.getOwnProfile);
+router.get("/:uid", profileAPIController.getOwnProfile);
 
 module.exports = router
