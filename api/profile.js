@@ -16,7 +16,7 @@ const { nanoid } = require('nanoid');
  *  @param {Request} req - Request received from client.
  *  @param {Response} res - Response to be sent to client.
  */
-exports.getOwnProfile = async (req, res) => {
+exports.getProfile = async (req, res) => {
     
     const uid = req.params.uid;
     if (typeof uid == 'undefined') {
