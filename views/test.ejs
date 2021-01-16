@@ -144,10 +144,15 @@
             const deadline = new Date(Date.parse(new Date()) + 6 * 60 * 1000);
             initializeClock('clockdiv', deadline);
 
-            var timeinterval = setInterval(() => {
-                if (Date.parse(deadline) - Date.parse(new Date()) <= 0)
+            const saveTest = () => {
+                if (Date.parse(deadline) - Date.parse(new Date()) <= 0) {
                     document.getElementById('test-form').submit();
-            }, 1000);
+                    clearInterval(timeinterval)
+                }
+            };
+
+            var timeinterval = setInterval(saveTest, 1000);
+            
         }
 
 
