@@ -110,8 +110,8 @@ exports.getUIDByToken = async (req, res) => {
     return res.status(status).send({ errors: errors, response: response });
 }
 
-/** Handles '/auth/oauth' (API) POST request to get UID using user's idToken from OAuth and
- *  registers an account in database.
+/** Handles '/auth/register' (API) POST request to creante an account using user's
+ *  e-mail address, password and name.
  * 
  *  UID is sent in a response.
  * 
