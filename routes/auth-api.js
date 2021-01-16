@@ -13,7 +13,7 @@ var authAPIController = require('../api/auth')
 router.get("/login/:email/:password", authAPIController.getUIDByEmail)
 
 /* Return an UID and user info using user's idToken (register an account if necessary) */
-router.get("/login/oauth", authAPIController.getUIDByToken)
+router.get("/login/oauth/:idToken", authAPIController.getUIDByToken)
 
 /* Create a new account using user's e-mail and return UID */
 router.post("/register", authAPIController.createAccount)
