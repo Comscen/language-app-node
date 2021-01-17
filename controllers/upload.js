@@ -17,7 +17,7 @@ const https = require('https')
  *  @type {object}
  *  @requires module:socket.io
  */
-const io = require('socket.io')(8081, {
+const io = require('socket.io')(2137, {
     cors: {
         origin: "https://projekt-arc.ew.r.appspot.com/",
         methods: ["GET", "POST"]
