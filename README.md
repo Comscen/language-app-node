@@ -73,6 +73,3 @@ Application started on PORT: 3000
 Now you can open your browser and go to ```http://localhost:3000/``` or ```http://localhost:<PORT_NUMBER>/``` if you have changed the default port number.
 
 To turn off the server use ```CTRL + C```.
-
-- Michał Tangri - mt.michaltangri@gmail.com
-- Sebastian Czajkowski - czaj.sebastian@gmail.com
